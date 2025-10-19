@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lawn Sprinkler Planner - Design Your Perfect Irrigation System</title>
+<meta name="description" content="Plan your lawn irrigation like a pro. Drag-and-drop sprinklers, visualize coverage zones, and generate professional PDF schematics. Free online tool for homeowners and landscapers.">
+<meta name="keywords" content="lawn sprinkler, irrigation planner, sprinkler layout, garden watering, irrigation design, lawn care, sprinkler coverage">
+<meta name="author" content="Lawn Sprinkler Simulator">
+<meta property="og:title" content="Lawn Sprinkler Planner - Design Your Perfect Irrigation System">
+<meta property="og:description" content="Plan your lawn irrigation like a pro. Drag-and-drop sprinklers, visualize coverage zones, and generate professional PDF schematics.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*, *::before, *::after {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+html {
+        font-size: 16px;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); /* Gradient Background */
+        background-attachment: fixed;
+        color: #374151; /* Dark Gray Text */
+        line-height: 1.6;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        position: relative;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    :root {
+        --primary-color: #4f46e5; /* Indigo */
+        --primary-color-dark: #4338ca;
+        --primary-color-light: #6366f1;
+        --secondary-color: #6b7280; /* Medium Gray */
+        --light-color: #ffffff;
+        --dark-color: #1f2937; /* Darker Gray */
+        --success-color: #10b981; /* Emerald */
+        --info-color: #3b82f6; /* Blue */
+        --warning-color: #f59e0b; /* Amber */
+        --danger-color: #ef4444; /* Red */
+        --danger-color-dark: #dc2626;
+        --lawn-color: #ecfdf5; /* Lighter, softer Lawn Green */
+        --lawn-border-color: #a7f3d0; /* Border matching lawn green */
+        --terrain-color: #f3f4f6; /* Light gray for terrain outside lawn */
+        --terrain-border-color: #d1d5db; /* Terrain border */
+        --sprinkler-fill: rgba(79, 70, 229, 0.1); /* Lighter fill */
+        --sprinkler-border: #818cf8; /* Lighter Indigo border */
+        --selected-sprinkler-border: var(--danger-color);
+        --selected-sprinkler-center: var(--danger-color);
+        --sprinkler-center: var(--primary-color-dark);
+        --border-color: #e5e7eb; /* Lighter Gray border */
+        --input-bg: var(--light-color);
+        --border-radius: 12px; /* More rounded for modern look */
+        --border-radius-sm: 8px;
+        --box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --box-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --box-shadow-focus: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Consistent focus shadow */
+        --transition-speed: 0.2s;
+        --transition-speed-fast: 0.15s;
+        --transition-speed-slow: 0.35s;
+        --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        --action-tooltip-bg: rgba(31, 41, 55, 0.95); /* Darker tooltip */
+        --action-tooltip-text: var(--light-color);
+    }
+
+    .simulator-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        padding: 1.5rem; /* Increased padding */
+        gap: 1.5rem; /* Increased gap */
+        position: relative;
+        z-index: 1;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        min-width: 0;
+    }
+
+    .toolbox {
+        flex-basis: 360px; /* Slightly wider */
+        flex-shrink: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 1) 100%);
+        backdrop-filter: blur(10px);
+        padding: 1.75rem; /* Increased padding */
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem; /* Increased gap */
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        transition: all var(--transition-speed-slow) var(--transition-easing);
+    }
+    .toolbox:hover { 
+        box-shadow: var(--box-shadow-lg); 
+        transform: translateY(-2px);
+    }
+
+    .card {
+        background-color: var(--light-color);
+        padding: 0;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        border: 1px solid var(--border-color);
+        transition: all var(--transition-speed-slow) var(--transition-easing);
+        overflow: hidden;
+        position: relative;
+    }
+    .card:hover {
+        box-shadow: var(--box-shadow-lg);
+        transform: translateY(-2px);
+    }
+    .card.define-lawn-card.collapsed { 
+        margin-bottom: 0; 
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.1rem 1.75rem; /* Adjusted padding */
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        background: linear-gradient(135deg, rgba(253, 253, 254, 1) 0%, rgba(249, 250, 251, 1) 100%);
+        transition: all var(--transition-speed) var(--transition-easing);
+    }
+    .card-header:hover { 
+        background: linear-gradient(135deg, rgba(249, 250, 251, 1) 0%, rgba(245, 246, 247, 1) 100%);
+    }
+    .card-header h2 {
+         color: var(--dark-color);
+         margin-bottom: 0;
+         font-size: 1.1rem; /* Slightly larger */
+         font-weight: 600;
+         border-bottom: none;
+         padding-bottom: 0;
+         display: inline-block;
+    }
+
+    .card-toggle-btn {
+        background: none;
+        border: none;
+        padding: 8px; /* Larger click area */
+        cursor: pointer;
+        color: var(--secondary-color);
+        transition: all var(--transition-speed) var(--transition-easing);
+        border-radius: 50%; /* Make it round */
+    }
+    .card-toggle-btn:hover { 
+        background-color: rgba(79, 70, 229, 0.1); 
+        color: var(--primary-color);
+        transform: scale(1.1);
+    }
+    .card-toggle-btn:active {
+        transform: scale(0.95);
+    }
+    .card-toggle-btn svg { width: 20px; height: 20px; display: block; fill: currentColor; }
+    .define-lawn-card.collapsed .card-toggle-btn { transform: rotate(-90deg); }
+
+    .card-content {
+        padding: 1.75rem;
+        transition: max-height var(--transition-speed-slow) var(--transition-easing), opacity 0.25s var(--transition-easing) 0.05s, padding var(--transition-speed-slow) var(--transition-easing), visibility 0s linear 0.35s;
+        max-height: 500px; opacity: 1; visibility: visible; overflow: hidden;
+    }
+    .card-content.collapsed {
+        max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; visibility: hidden;
+        transition: max-height var(--transition-speed-slow) var(--transition-easing), opacity 0.2s var(--transition-easing), padding var(--transition-speed-slow) var(--transition-easing), visibility 0s linear 0.35s;
+    }
+
+    .simulation-area.card { padding: 1.25rem; flex-grow: 1; }
+
+    .toolbox > h2 {
+        color: var(--dark-color);
+        margin-bottom: 0;
+        font-size: 1.25rem; /* Larger */
+        font-weight: 600;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.1rem; /* Adjusted */
+        display: block;
+    }
+
+    .toolbox h3 {
+        margin-bottom: 0.85rem; /* Adjusted */
+        color: var(--dark-color);
+        font-size: 1rem; /* Larger */
+        font-weight: 600;
+        margin-top: 0.3rem;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px; /* Increased gap */
+        margin-bottom: 1.1rem; /* Increased margin */
+    }
+    .input-group label { font-weight: 500; color: var(--secondary-color); font-size: 0.85rem; }
+    .input-group input[type="number"] {
+        padding: 11px 14px; /* Increased padding */
+        border: 1.5px solid var(--border-color);
+        border-radius: var(--border-radius-sm);
+        font-size: 0.95rem;
+        width: 100%;
+        background-color: var(--input-bg);
+        transition: all var(--transition-speed) var(--transition-easing);
+        box-shadow: var(--box-shadow);
+    }
+    .input-group input[type="number"]:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+    }
+    .input-group input[type="number"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: var(--box-shadow-focus);
+        background-color: var(--light-color);
+        transform: translateY(-1px);
+    }
+    .input-group input[type="number"].invalid {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+    .input-group input[type="number"]:disabled { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; box-shadow: none; border-color: #e5e7eb; }
+    .input-group small { font-size: 0.775rem; color: var(--secondary-color); margin-top: -2px; }
+
+    .btn {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+        color: white; 
+        border: 1px solid transparent;
+        padding: 12px 20px; /* Increased padding */
+        border-radius: var(--border-radius-sm); 
+        font-size: 0.9rem; 
+        font-weight: 500;
+        cursor: pointer; 
+        transition: all var(--transition-speed) var(--transition-easing);
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px; /* Increased gap */
+        text-align: center; 
+        width: 100%; 
+        margin-top: 5px; 
+        box-shadow: var(--box-shadow);
+        line-height: 1.4;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    .btn:hover { 
+        background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color) 100%);
+        transform: translateY(-2px); 
+        box-shadow: var(--box-shadow-lg); 
+    }
+    .btn:active { 
+        transform: translateY(0) scale(0.98); 
+        box-shadow: var(--box-shadow);
+    }
+    .btn svg, .btn img { 
+        width: 1.1em; 
+        height: 1.1em; 
+        fill: currentColor; 
+        vertical-align: middle; 
+        margin-right: 0;
+        position: relative;
+        z-index: 1;
+    } /* Adjusted size/margin */
+    .btn-danger { 
+        background: linear-gradient(135deg, var(--danger-color) 0%, var(--danger-color-dark) 100%);
+        border-color: var(--danger-color); 
+    }
+    .btn-danger:hover { 
+        background: linear-gradient(135deg, #f87171 0%, var(--danger-color) 100%);
+        box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2); 
+    }
+    .btn-secondary {
+         background: var(--light-color); 
+         color: var(--dark-color); 
+         border-color: var(--border-color);
+         box-shadow: var(--box-shadow);
+    }
+    .btn-secondary::before {
+        background: rgba(0, 0, 0, 0.03);
+    }
+    .btn-secondary:hover { 
+        background: #fafafa; 
+        border-color: #9ca3af;
+        transform: none;
+    }
+    .btn-secondary:active {
+        background: #f3f4f6;
+        transform: scale(0.98);
+    }
+
+    .tool-button-group { display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 12px; flex-wrap: wrap; }
+    .tool-button {
+         background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 1) 100%);
+         color: var(--dark-color); 
+         border: 1.5px solid var(--border-color);
+         width: auto; 
+         min-width: 90px; 
+         height: 90px; 
+         padding: 12px 16px; /* Increased padding */
+         margin-bottom: 0; 
+         font-weight: 500; 
+         box-shadow: var(--box-shadow);
+         justify-content: center; 
+         align-items: center; 
+         flex-shrink: 0;
+         flex-direction: column; 
+         gap: 6px; 
+         font-size: 0.8rem; 
+         text-align: center; /* Increased font size */
+         cursor: grab;
+         border-radius: var(--border-radius-sm);
+         transition: all var(--transition-speed) var(--transition-easing);
+         position: relative;
+         overflow: hidden;
+         user-select: none;
+         -webkit-user-select: none;
+         -moz-user-select: none;
+         -webkit-user-drag: element;
+    }
+    .tool-button:active {
+        cursor: grabbing;
+    }
+    .tool-button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity var(--transition-speed) var(--transition-easing);
+    }
+    .tool-button:hover::after {
+        opacity: 1;
+    }
+    .tool-button:hover {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(243, 244, 246, 1) 100%);
+        border-color: var(--primary-color);
+        box-shadow: var(--box-shadow-lg);
+        transform: translateY(-4px) scale(1.02);
+    }
+    .tool-button:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+    .tool-button img {
+        width: 36px; /* Increased size */
+        height: 36px; /* Increased size */
+        margin-right: 0; 
+        object-fit: contain; 
+        border-radius: 4px;
+        background-color: transparent; 
+        padding: 0;
+        display: block; 
+        margin-bottom: 4px;
+        transition: transform var(--transition-speed) var(--transition-easing);
+        position: relative;
+        z-index: 1;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    .tool-button:hover img { 
+        transform: scale(1.1) rotate(5deg);
+    }
+    .tool-button span {
+        display: block; 
+        font-size: 0.75rem; 
+        color: var(--secondary-color); 
+        line-height: 1.2;
+        position: relative;
+        z-index: 1;
+        transition: color var(--transition-speed) var(--transition-easing);
+        pointer-events: none;
+        user-select: none;
+    }
+    .tool-button:hover span {
+        color: var(--primary-color);
+    }
+
+    #sprinkler-params .param-group {
+         border: none; padding: 0; margin-top: 0; background-color: transparent;
+         max-height: 0; opacity: 0; overflow: hidden; visibility: hidden;
+         transform: translateY(-5px);
+         transition: max-height var(--transition-speed-slow) var(--transition-easing), opacity 0.25s var(--transition-easing), visibility 0s linear 0.35s, transform var(--transition-speed-slow) var(--transition-easing);
+    }
+    #sprinkler-params .param-group.visible {
+         max-height: 500px; opacity: 1; visibility: visible; transform: translateY(0);
+         transition: max-height var(--transition-speed-slow) var(--transition-easing), opacity 0.25s var(--transition-easing) 0.1s, visibility 0s linear 0s, transform var(--transition-speed-slow) var(--transition-easing);
+         margin-top: 0.85rem; /* Adjusted */
+    }
+    .hint-message {
+        font-size: 0.8rem; color: var(--secondary-color); margin-top: 10px; /* Adjusted */
+        opacity: 0; visibility: hidden; max-height: 0;
+        transition: opacity var(--transition-speed) var(--transition-easing), max-height var(--transition-speed) var(--transition-easing), margin-top var(--transition-speed) var(--transition-easing), padding var(--transition-speed) var(--transition-easing), background-color var(--transition-speed) var(--transition-easing);
+        background-color: #f3f4f6; padding: 0 12px; border-radius: var(--border-radius); line-height: 1.4;
+    }
+    .hint-message.visible { opacity: 1; visibility: visible; max-height: 6em; margin-top: 12px; padding: 10px 12px; } /* Adjusted */
+    #edit-hint { color: var(--info-color); font-weight: 500; background-color: rgba(59, 130, 246, 0.08); }
+    #selection-hint { background-color: rgba(245, 158, 11, 0.08); } /* Amber hint */
+
+    #no-tool-selected-msg {
+        font-style: italic; color: var(--secondary-color); text-align: center; padding: 14px 0; /* Increased padding */
+        transition: all var(--transition-speed-slow) var(--transition-easing);
+        border: 1px dashed var(--border-color); border-radius: var(--border-radius);
+        background-color: #fdfdfe; font-size: 0.875rem; margin-top: 0.85rem;
+    }
+    #no-tool-selected-msg.hidden { opacity: 0; pointer-events: none; border-color: transparent; max-height: 0; padding: 0; margin: 0; overflow: hidden; border-width: 0; }
+
+    .simulation-area {
+        flex-grow: 1; 
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 1) 100%);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow); 
+        padding: 1.25rem; 
+        display: flex; 
+        justify-content: center;
+        align-items: center; 
+        overflow: hidden; 
+        position: relative; 
+        border: 1px solid var(--border-color);
+        transition: all var(--transition-speed-slow) var(--transition-easing);
+        min-height: 350px; /* Increased min height */
+    }
+    .simulation-area:hover {
+        box-shadow: var(--box-shadow-lg);
+    }
+    .simulation-area.drag-over {
+        background: linear-gradient(135deg, rgba(238, 242, 255, 1) 0%, rgba(224, 231, 255, 1) 100%);
+        box-shadow: inset 0 0 0 2px var(--primary-color), var(--box-shadow-lg);
+        border-color: var(--primary-color);
+    }
+    #lawn-canvas {
+        display: block; 
+        max-width: 100%; 
+        max-height: 100%;
+        background-color: var(--terrain-color);
+        cursor: default;
+        opacity: 0; 
+        visibility: hidden; 
+        transform: scale(0.95);
+        transition: all 0.6s var(--transition-easing);
+        border: 2px solid var(--terrain-border-color);
+        border-radius: 8px; /* Match inner content radius */
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    #lawn-canvas.visible { 
+        opacity: 1; 
+        visibility: visible; 
+        transform: scale(1); 
+        transition: all 0.6s var(--transition-easing);
+    }
+    #canvas-hint { 
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        color: var(--secondary-color); 
+        font-size: 1rem; 
+        text-align: center; 
+        pointer-events: none; 
+        opacity: 1; 
+        transition: opacity 0.5s var(--transition-easing); 
+        padding: 18px 24px; 
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius); 
+        box-shadow: var(--box-shadow-lg);
+        border: 1px solid var(--border-color);
+    }
+    #canvas-hint.hidden { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    .results-area {
+        padding-top: 1.25rem; 
+        margin-top: 1.25rem; 
+        border-top: 2px solid var(--border-color);
+    }
+    .results-area h3 { 
+        margin-bottom: 1rem; 
+        font-size: 1rem; 
+        color: var(--dark-color);
+        font-weight: 600;
+    }
+    .results-area p { 
+        font-size: 0.9rem; 
+        margin-bottom: 10px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: var(--border-radius-sm);
+        transition: all var(--transition-speed) var(--transition-easing);
+    }
+    .results-area p:hover {
+        background: rgba(0, 0, 0, 0.04);
+        transform: translateX(4px);
+    }
+    .results-area span {
+         font-weight: 600; 
+         padding: 5px 12px; 
+         border-radius: 6px; 
+         min-width: 80px; 
+         text-align: right;
+         transition: all var(--transition-speed) var(--transition-easing);
+         font-size: 0.9rem;
+         box-shadow: var(--box-shadow);
+    }
+    #coverage-percentage { background-color: rgba(16, 185, 129, 0.15); color: #047857; }
+    #overlap-percentage { background-color: rgba(245, 158, 11, 0.15); color: #b45309; }
+    #uncovered-percentage { background-color: rgba(107, 114, 128, 0.15); color: #4b5563; }
+    #efficiency-percentage { background-color: rgba(59, 130, 246, 0.15); color: #1e40af; }
+    .results-area .estimation-note { 
+        font-size: 0.75rem; 
+        color: var(--secondary-color); 
+        margin-top: 12px; 
+        text-align: right; 
+        font-style: italic; 
+    }
+
+    @media (max-width: 992px) {
+        .simulator-container { flex-direction: column; height: auto; overflow: auto; padding: 1rem; gap: 1rem; }
+        .toolbox { flex-basis: auto; order: 2; overflow-y: visible; padding: 1.5rem; }
+        .main-content { order: 1; gap: 1rem; }
+        .card, .toolbox { padding: 1.5rem; }
+         .card-header { padding: 1rem 1.5rem; }
+         .card-content { padding: 1.5rem; }
+        .card-header h2, .toolbox > h2 { font-size: 1.1rem; margin-bottom: 0; }
+        body { height: auto; overflow: auto; }
+        .tool-button-group { justify-content: center; }
+        .footer { position: relative; padding: 1rem; }
+    }
+
+    /* Footer Styles */
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+        backdrop-filter: blur(10px);
+        padding: 0.75rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .footer-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-size: 0.85rem;
+        color: var(--secondary-color);
+        font-weight: 500;
+    }
+
+    /* PDF Download Button - Hidden by default */
+    #download-pdf-btn {
+        display: none;
+    }
+    #download-pdf-btn.visible {
+        display: flex;
+    }
+
+    /* PDF Loading Modal */
+    .pdf-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        animation: fadeIn 0.3s ease;
+    }
+    .pdf-modal.active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .pdf-modal-content {
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-color);
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .pdf-modal-content h3 {
+        margin: 0 0 0.5rem 0;
+        color: var(--dark-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        font-family: 'Courier', monospace;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .loading-message {
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        font-family: 'Courier', monospace;
+        min-height: 24px;
+    }
+    .ad-space-placeholder {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border: 2px dashed #d1d5db;
+        border-radius: var(--border-radius-sm);
+        height: 120px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #9ca3af;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+    .loading-bar-container {
+        width: 100%;
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .loading-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, 
+            var(--primary-color) 0%, 
+            #6366f1 50%, 
+            var(--primary-color) 100%);
+        background-size: 200% 100%;
+        border-radius: 4px;
+        transition: width 0.1s linear;
+        animation: shimmer 2s infinite;
+    }
+    .loading-percent {
+        text-align: center;
+        font-family: 'Courier', monospace;
+        font-weight: 600;
+        color: var(--dark-color);
+        font-size: 0.9rem;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { 
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* Interactive Guide System */
+    .guide-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1500;
+        display: none;
+        pointer-events: none;
+    }
+    .guide-overlay.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .guide-highlight {
+        position: absolute;
+        border: 3px solid var(--primary-color);
+        border-radius: var(--border-radius);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2), 0 0 30px rgba(79, 70, 229, 0.6);
+        pointer-events: auto;
+        z-index: 1501;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { 
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2), 0 0 30px rgba(79, 70, 229, 0.6);
+        }
+        50% { 
+            box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.3), 0 0 40px rgba(79, 70, 229, 0.8);
+        }
+    }
+    
+    .guide-tooltip {
+        position: absolute;
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        padding: 1.25rem 1.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-lg);
+        border: 2px solid var(--primary-color);
+        max-width: 320px;
+        z-index: 1502;
+        pointer-events: auto;
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .guide-tooltip::before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+    }
+    
+    .guide-tooltip.arrow-top::before {
+        top: -10px;
+        left: 20px;
+        border-width: 0 10px 10px 10px;
+        border-color: transparent transparent var(--primary-color) transparent;
+    }
+    
+    .guide-tooltip.arrow-bottom::before {
+        bottom: -10px;
+        left: 20px;
+        border-width: 10px 10px 0 10px;
+        border-color: var(--primary-color) transparent transparent transparent;
+    }
+    
+    .guide-tooltip.arrow-left::before {
+        left: -10px;
+        top: 20px;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent var(--primary-color) transparent transparent;
+    }
+    
+    .guide-tooltip h4 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .guide-tooltip p {
+        margin: 0 0 1rem 0;
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .guide-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+    
+    .guide-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-speed) var(--transition-easing);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .guide-btn-skip {
+        background: transparent;
+        color: var(--secondary-color);
+    }
+    
+    .guide-btn-skip:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--dark-color);
+    }
+    
+    .guide-btn-next {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .guide-btn-next:hover {
+        background: #4338ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+    
+    .guide-step-indicator {
+        font-size: 0.75rem;
+        color: var(--secondary-color);
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+
+</style>
+</head>
+<body>
+<div class="simulator-container">
+
+    <div class="main-content">
+        <div class="card define-lawn-card" id="define-lawn-card">
+             <div class="card-header" id="define-lawn-header">
+                 <h2>1. Define Lawn Area</h2>
+                 <button class="card-toggle-btn" aria-label="Toggle Lawn Definition" aria-expanded="true">
+                     <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                 </button>
+             </div>
+             <div class="card-content" id="define-lawn-content">
+                 <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                    <div class="input-group" style="flex: 1 1 120px; margin-bottom: 0;">
+                        <label for="lawn-length">Length (m):</label>
+                        <input type="number" id="lawn-length" placeholder="e.g. 20" min="1" step="0.1">
+                    </div>
+                    <div class="input-group" style="flex: 1 1 120px; margin-bottom: 0;">
+                        <label for="lawn-width">Width (m):</label>
+                        <input type="number" id="lawn-width" placeholder="e.g. 10" min="1" step="0.1">
+                    </div>
+                    <button id="set-lawn-btn" class="btn" style="flex: 0 1 auto; padding: 10px 18px; margin-bottom: 0; height: 41px;">Set Dimensions</button>
+                 </div>
+             </div>
+        </div>
+
+        <div class="simulation-area card" id="simulation-area">
+            <canvas id="lawn-canvas"></canvas>
+            <div id="canvas-hint">Set lawn dimensions first.</div>
+        </div>
+    </div>
+
+    <aside class="toolbox">
+        <h2>Toolbox</h2>
+
+        <section>
+            <h3>2. Add Sprinklers</h3>
+            <div class="tool-button-group">
+                <button class="btn tool-button" id="tool-circular" title="Circular Sprinkler" draggable="true" data-type="circular">
+                    <img src="circular_sp.png" alt="Circular Sprinkler Icon">
+                    <span>Circular</span>
+                </button>
+                <button class="btn tool-button" id="tool-impact" title="Impact (Sector) Sprinkler" draggable="true" data-type="impact">
+                    <img src="impact_sp.png" alt="Impact Sprinkler Icon">
+                    <span>Impact</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="sprinkler-params">
+            <h3 id="config-title">3. Configure Selected Sprinkler</h3>
+             <div id="no-tool-selected-msg">Click a sprinkler on the lawn to configure it.</div>
+
+            <div id="param-circular" class="param-group">
+                <div class="input-group">
+                    <label for="circular-radius">Radius (m):</label>
+                    <input type="number" id="circular-radius" value="3" min="0.1" step="0.1" disabled>
+                </div>
+            </div>
+
+            <div id="param-impact" class="param-group">
+                <div class="input-group">
+                    <label for="impact-radius">Radius (m):</label>
+                    <input type="number" id="impact-radius" value="5" min="0.1" step="0.1" disabled>
+                </div>
+                <div class="input-group">
+                    <label for="impact-angle">Sweep Angle (°):</label>
+                    <input type="number" id="impact-angle" value="90" min="1" max="360" step="1" disabled>
+                </div>
+                 <div class="input-group">
+                    <label for="impact-rotation">Start Rotation (°):</label>
+                    <input type="number" id="impact-rotation" value="0" min="-360" max="360" step="1" disabled>
+                    <small>(0° faces right, positive is counter-clockwise)</small>
+                </div>
+            </div>
+             <p class="hint-message" id="edit-hint">Editing selected sprinkler. Changes apply live.</p>
+             <p class="hint-message" id="selection-hint">Click near a sprinkler's center to select. Use the icons to move or delete.</p>
+        </section>
+
+        <section>
+             <h3>Actions</h3>
+             <button id="download-pdf-btn" class="btn" style="margin-bottom: 10px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd" />
+                  </svg>
+                  Prepare PDF Schematic
+             </button>
+             <button id="clear-all-btn" class="btn btn-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.22-2.34.424a.75.75 0 10.22 1.482c.78-.208 1.585-.355 2.41-.412v9.217a.75.75 0 001.5 0V5.687c.825.057 1.63.204 2.41.412a.75.75 0 10.22-1.482c-.76-.203-1.545-.347-2.34-.424v-.443A2.75 2.75 0 008.75 1zM13.25 3.75A2.75 2.75 0 0010.5 1v2.187c.795.077 1.58.22 2.34.424a.75.75 0 11-.22 1.482c-.78-.208-1.585-.355-2.41-.412v9.217a.75.75 0 001.5 0V5.687c.825.057 1.63.204 2.41.412a.75.75 0 11.22-1.482c-.76-.203-1.545-.347-2.34-.424v-.443z" clip-rule="evenodd"/><path d="M3.75 6.25a.75.75 0 00-1.5 0v10.5c0 .75.75 1.5 1.5 1.5h10.5a.75.75 0 000-1.5H3.75V6.25z"/></svg>
+                  Clear All Sprinklers
+             </button>
+        </section>
+
+        <section class="results-area">
+            <h3>4. Coverage Analysis</h3>
+            <p>Total Covered: <span id="coverage-percentage">0.00%</span></p>
+            <p>Overlap (≥2): <span id="overlap-percentage">0.00%</span></p>
+            <p>Uncovered: <span id="uncovered-percentage">100.00%</span></p>
+            <p>Lawn Efficiency: <span id="efficiency-percentage">0.00%</span></p>
+            <p class="estimation-note">Estimated via Monte Carlo sampling.<br>Efficiency = % of sprinkler coverage on lawn.</p>
+        </section>
+    </aside>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <span>© 2025 Copyright Protected • Created by <strong>Your Company</strong></span>
+    </div>
+</footer>
+
+<!-- PDF Generation Loading Modal -->
+<div id="pdf-loading-modal" class="pdf-modal">
+    <div class="pdf-modal-content">
+        <h3>Generating Schematic</h3>
+        <p id="loading-message" class="loading-message">Initializing PDF engine...</p>
+        
+        <!-- Ad Space Placeholder -->
+        <div class="ad-space-placeholder">
+            <!-- Future ad space - leave blank for now -->
+        </div>
+        
+        <!-- Engineering Loading Bar -->
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        <p class="loading-percent" id="loading-percent">0%</p>
+        
+        <!-- Download Button (appears at 100%) -->
+        <button id="modal-download-btn" class="btn" style="margin-top: 1rem; display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            Download PDF
+        </button>
+    </div>
+</div>
+
+<!-- Interactive Guide Overlay -->
+<div id="guide-overlay" class="guide-overlay"></div>
+
+<script>
+    // --- Existing Variables ---
+    const defineLawnCard = document.getElementById('define-lawn-card');
+    const defineLawnHeader = document.getElementById('define-lawn-header');
+    const defineLawnContent = document.getElementById('define-lawn-content');
+    const defineLawnToggleBtn = defineLawnHeader.querySelector('.card-toggle-btn');
+    const lawnLengthInput = document.getElementById('lawn-length');
+    const lawnWidthInput = document.getElementById('lawn-width');
+    const setLawnBtn = document.getElementById('set-lawn-btn');
+    const simulationArea = document.getElementById('simulation-area');
+    const lawnCanvas = document.getElementById('lawn-canvas');
+    const canvasHint = document.getElementById('canvas-hint');
+    const ctx = lawnCanvas.getContext('2d');
+    const toolButtons = Array.from(document.querySelectorAll('.tool-button'));
+    const sprinklerParamsSection = document.getElementById('sprinkler-params');
+    const configTitle = document.getElementById('config-title');
+    const noToolSelectedMsg = document.getElementById('no-tool-selected-msg');
+    const paramCircularDiv = document.getElementById('param-circular');
+    const paramImpactDiv = document.getElementById('param-impact');
+    const circularRadiusInput = document.getElementById('circular-radius');
+    const impactRadiusInput = document.getElementById('impact-radius');
+    const impactAngleInput = document.getElementById('impact-angle');
+    const impactRotationInput = document.getElementById('impact-rotation');
+    const paramInputs = [circularRadiusInput, impactRadiusInput, impactAngleInput, impactRotationInput];
+    const editHint = document.getElementById('edit-hint');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    const selectionHint = document.getElementById('selection-hint');
+    const coveragePercentageSpan = document.getElementById('coverage-percentage');
+    const overlapPercentageSpan = document.getElementById('overlap-percentage');
+    const uncoveredPercentageSpan = document.getElementById('uncovered-percentage');
+    const efficiencyPercentageSpan = document.getElementById('efficiency-percentage');
+
+    let lawnWidthMeters = 0, lawnHeightMeters = 0;
+    let canvasWidthPx = 0, canvasHeightPx = 0, scaleFactor = 1;
+    let terrainMarginMeters = 3; // Terrain extends 3 meters beyond lawn on each side
+    let totalCanvasWidthMeters = 0, totalCanvasHeightMeters = 0; // Including terrain
+    let sprinklers = [], nextSprinklerId = 0;
+    let selectedSprinklerIndex = -1, isLawnValid = false;
+    let isMovingSprinkler = false, movingSprinklerIndex = -1;
+    let dragOffsetX = 0, dragOffsetY = 0;
+    let deleteActionBounds = null, moveActionBounds = null;
+    let cssVars = {};
+
+    const SELECTION_RADIUS_PX = 12;
+    const ACTION_ICON_BASE_SIZE_PX = 20; // Base size for the icon image itself
+    const ACTION_ICON_HOVER_SCALE = 1.25; // How much bigger on hover
+    const ACTION_ICON_CLICK_RADIUS_PX = 18; // Clickable area radius (slightly larger than visual)
+    const ACTION_ICON_OFFSET_PX = 30;       // How far from center icons are drawn
+    const ACTION_TOOLTIP_OFFSET_Y = 18;     // How far below icon tooltip appears
+    const MONTE_CARLO_POINTS = 30000;
+
+    // --- NEW Variables ---
+    let trashIcon = new Image();
+    let moveIcon = new Image();
+    let trashIconLoaded = false;
+    let moveIconLoaded = false;
+    let lastMousePosPx = { x: -1, y: -1 }; // Track mouse position on canvas
+    let hoveredAction = null; // 'delete', 'move', or null
+    let currentCursorStyle = 'default'; // To avoid flickering
+
+    // --- Image Loading ---
+    function loadActionIcons() {
+        trashIcon.onload = () => { trashIconLoaded = true; console.log("Trash icon loaded."); drawLawnAndSprinklers(); };
+        trashIcon.onerror = () => console.error("Failed to load trash.png");
+        trashIcon.src = 'trash.png'; // Make sure this path is correct
+
+        moveIcon.onload = () => { moveIconLoaded = true; console.log("Move icon loaded."); drawLawnAndSprinklers(); };
+        moveIcon.onerror = () => console.error("Failed to load move.png");
+        moveIcon.src = 'move.png'; // Make sure this path is correct
+    }
+
+    function updateCssVars() {
+         const rootStyle = getComputedStyle(document.documentElement);
+         cssVars = {
+             sprinklerFill: rootStyle.getPropertyValue('--sprinkler-fill').trim(),
+             sprinklerBorder: rootStyle.getPropertyValue('--sprinkler-border').trim(),
+             selectedSprinklerBorder: rootStyle.getPropertyValue('--selected-sprinkler-border').trim(),
+             sprinklerCenter: rootStyle.getPropertyValue('--sprinkler-center').trim(),
+             selectedSprinklerCenter: rootStyle.getPropertyValue('--selected-sprinkler-center').trim(),
+             actionTooltipBg: rootStyle.getPropertyValue('--action-tooltip-bg').trim(),
+             actionTooltipText: rootStyle.getPropertyValue('--action-tooltip-text').trim(),
+             lawnColor: rootStyle.getPropertyValue('--lawn-color').trim(),
+             lawnBorderColor: rootStyle.getPropertyValue('--lawn-border-color').trim(),
+             terrainColor: rootStyle.getPropertyValue('--terrain-color').trim(),
+         };
+    }
+
+    function initializeSimulator() {
+        updateCssVars();
+        loadActionIcons(); // Start loading icons
+        setupLawn(false);
+        addEventListeners();
+        addDragDropListeners();
+        window.addEventListener('resize', () => setupLawn(false));
+    }
+    window.addEventListener('load', initializeSimulator);
+
+    function addEventListeners() {
+        setLawnBtn.addEventListener('click', () => setupLawn(true));
+        lawnCanvas.addEventListener('mousedown', handleCanvasMouseDown);
+        lawnCanvas.addEventListener('mousemove', handleCanvasMouseMove); // Use mousemove for hover
+        lawnCanvas.addEventListener('mouseleave', handleCanvasMouseLeave); // Reset hover when leaving canvas
+        lawnCanvas.addEventListener('click', handleCanvasClick);
+        paramInputs.forEach(input => {
+            input.addEventListener('input', handleParamChange);
+            input.addEventListener('blur', handleParamChange);
+        });
+        clearAllBtn.addEventListener('click', clearAllSprinklers);
+        downloadPdfBtn.addEventListener('click', generatePDFSchematic);
+        defineLawnHeader.addEventListener('click', toggleDefineLawn);
+        [lawnLengthInput, lawnWidthInput].forEach(input => {
+            input.addEventListener('input', () => validateLawnInput(input));
+            input.addEventListener('blur', () => validateLawnInput(input));
+        });
+    }
+
+    // --- Drag/Drop Listeners (Unchanged) ---
+     function addDragDropListeners() {
+         toolButtons.forEach(button => {
+             button.addEventListener('dragstart', (event) => {
+                 const type = button.getAttribute('data-type');
+                 if (type) {
+                     event.dataTransfer.setData('text/plain', type);
+                     event.dataTransfer.effectAllowed = 'copy';
+                     
+                     // Create a custom drag image to prevent default ghosting
+                     const dragImg = button.cloneNode(true);
+                     dragImg.style.position = 'absolute';
+                     dragImg.style.top = '-1000px';
+                     dragImg.style.opacity = '0.8';
+                     document.body.appendChild(dragImg);
+                     event.dataTransfer.setDragImage(dragImg, 45, 45);
+                     
+                     // Clean up after a short delay
+                     setTimeout(() => {
+                         if (dragImg.parentNode) {
+                             document.body.removeChild(dragImg);
+                         }
+                     }, 0);
+                     
+                     // Add visual feedback
+                     button.style.opacity = '0.5';
+                 } else { 
+                     event.preventDefault(); 
+                 }
+             });
+             
+             button.addEventListener('dragend', (event) => {
+                 button.style.opacity = '1';
+             });
+         });
+         simulationArea.addEventListener('dragover', (event) => {
+             if (!isLawnValid) return;
+             event.preventDefault(); event.dataTransfer.dropEffect = 'copy'; simulationArea.classList.add('drag-over');
+         });
+         simulationArea.addEventListener('dragleave', () => simulationArea.classList.remove('drag-over'));
+         simulationArea.addEventListener('drop', (event) => {
+             if (!isLawnValid) return;
+             event.preventDefault(); simulationArea.classList.remove('drag-over');
+             const type = event.dataTransfer.getData('text/plain');
+             const dropCoordsPx = getCanvasCoords(event); const dropCoordsM = pixelsToMeters(dropCoordsPx);
+             // Allow placement anywhere in the terrain area (including outside lawn)
+             const clampedX_m = Math.max(0, Math.min(totalCanvasWidthMeters, dropCoordsM.x));
+             const clampedY_m = Math.max(0, Math.min(totalCanvasHeightMeters, dropCoordsM.y));
+             if (type === 'circular' || type === 'impact') addSprinkler(clampedX_m, clampedY_m, type);
+         });
+     }
+
+    function validateLawnInput(input) {
+         const value = parseFloat(input.value);
+         const isValid = !isNaN(value) && value > 0 && value <= 1000; // Added max value
+         input.classList.toggle('invalid', !isValid);
+         return isValid;
+    }
+
+    function toggleDefineLawn() {
+         const isCollapsed = defineLawnCard.classList.toggle('collapsed');
+         defineLawnContent.classList.toggle('collapsed');
+         defineLawnToggleBtn.setAttribute('aria-expanded', !isCollapsed);
+         // Recalculate lawn on expand if needed, or just rely on Set button
+         if (!isCollapsed && !isLawnValid) {
+             // Optionally trigger validation/setup or just let user click "Set"
+         }
+    }
+
+    function setupLawn(forceRedraw = false) {
+        const lengthIsValid = validateLawnInput(lawnLengthInput);
+        const widthIsValid = validateLawnInput(lawnWidthInput);
+
+        if (!lengthIsValid || !widthIsValid) {
+             isLawnValid = false;
+             lawnCanvas.classList.remove('visible');
+             canvasHint.classList.remove('hidden');
+             canvasHint.textContent = 'Enter valid lawn dimensions (1-1000m).';
+             if (ctx) ctx.clearRect(0, 0, canvasWidthPx, canvasHeightPx);
+             canvasWidthPx = 0; canvasHeightPx = 0; scaleFactor = 1;
+             updateCoverage(); resetParameterUI(); updateUIState(); // Use new state updater
+             return;
+        }
+
+        isLawnValid = true;
+        lawnWidthMeters = parseFloat(lawnLengthInput.value);
+        lawnHeightMeters = parseFloat(lawnWidthInput.value);
+        
+        // Calculate total canvas size including terrain
+        totalCanvasWidthMeters = lawnWidthMeters + (terrainMarginMeters * 2);
+        totalCanvasHeightMeters = lawnHeightMeters + (terrainMarginMeters * 2);
+        
+        canvasHint.textContent = 'Set lawn dimensions first.'; // Default hint
+
+        requestAnimationFrame(() => { // Ensure DOM is ready for measurements
+            const simAreaBounds = simulationArea.getBoundingClientRect();
+            const availableWidth = simAreaBounds.width - (parseFloat(getComputedStyle(simulationArea).paddingLeft) + parseFloat(getComputedStyle(simulationArea).paddingRight));
+            const availableHeight = simAreaBounds.height - (parseFloat(getComputedStyle(simulationArea).paddingTop) + parseFloat(getComputedStyle(simulationArea).paddingBottom));
+
+            if (availableWidth <= 0 || availableHeight <= 0) return; // Avoid division by zero
+
+            const widthScale = availableWidth / totalCanvasWidthMeters;
+            const heightScale = availableHeight / totalCanvasHeightMeters;
+            scaleFactor = Math.max(1, Math.min(widthScale, heightScale)); // Ensure minimum scale for visibility if needed
+
+            // Prevent excessively large canvas if scale factor is huge (tiny lawn in large area)
+            scaleFactor = Math.min(scaleFactor, 50); // Example limit
+
+            canvasWidthPx = Math.max(1, totalCanvasWidthMeters * scaleFactor); // Ensure minimum 1px
+            canvasHeightPx = Math.max(1, totalCanvasHeightMeters * scaleFactor);
+            lawnCanvas.width = canvasWidthPx;
+            lawnCanvas.height = canvasHeightPx;
+
+            lawnCanvas.classList.add('visible');
+            canvasHint.classList.add('hidden');
+
+            if (forceRedraw) {
+                sprinklers = [];
+                selectedSprinklerIndex = -1;
+                resetParameterUI();
+            } else {
+                // Deselect if index is now out of bounds (e.g., after clear all?)
+                if (selectedSprinklerIndex >= sprinklers.length) {
+                    selectedSprinklerIndex = -1;
+                     resetParameterUI();
+                }
+            }
+
+            drawLawnAndSprinklers();
+            updateCoverage();
+            updateUIState(); // Use new state updater
+        });
+    }
+
+    function resetParameterUI() {
+         paramInputs.forEach(input => {
+             input.value = input.defaultValue || ''; // Reset to default value if available
+             input.disabled = true;
+             input.classList.remove('invalid');
+         });
+         paramCircularDiv.classList.remove('visible');
+         paramImpactDiv.classList.remove('visible');
+         noToolSelectedMsg.classList.remove('hidden');
+         editHint.classList.remove('visible');
+         selectionHint.classList.remove('visible'); // Hide selection hint too
+    }
+
+    // --- Renamed updateUI to updateUIState to avoid conflict ---
+    function updateUIState() {
+        const isEditing = selectedSprinklerIndex !== -1 && !isMovingSprinkler;
+        const selectedSprinkler = isEditing ? sprinklers[selectedSprinklerIndex] : null;
+        const typeToShow = selectedSprinkler?.type;
+
+        // Update config title
+        configTitle.textContent = isEditing
+            ? `3. Editing ${selectedSprinkler.type.charAt(0).toUpperCase() + selectedSprinkler.type.slice(1)} Sprinkler`
+            : '3. Configure Selected Sprinkler';
+
+        // Show/hide relevant parameter sections and 'no tool selected' message
+        noToolSelectedMsg.classList.toggle('hidden', isEditing || isMovingSprinkler || !isLawnValid || sprinklers.length === 0);
+        paramCircularDiv.classList.toggle('visible', typeToShow === 'circular');
+        paramImpactDiv.classList.toggle('visible', typeToShow === 'impact');
+
+        // Enable/disable inputs
+        paramInputs.forEach(input => input.disabled = true); // Disable all first
+        if(isEditing && selectedSprinkler) {
+             if (typeToShow === 'circular') {
+                 circularRadiusInput.disabled = false;
+             } else if (typeToShow === 'impact') {
+                 impactRadiusInput.disabled = false;
+                 impactAngleInput.disabled = false;
+                 impactRotationInput.disabled = false;
+             }
+        }
+
+        // Show/hide hint messages
+        editHint.classList.toggle('visible', isEditing);
+        selectionHint.classList.toggle('visible', !isEditing && !isMovingSprinkler && sprinklers.length > 0 && isLawnValid);
+
+        // Update cursor style (handled more dynamically in mousemove now)
+        updateCursor();
+    }
+
+    function updateCursor() {
+        let newCursorStyle = 'default';
+        if (!isLawnValid) {
+            newCursorStyle = 'not-allowed';
+        } else if (isMovingSprinkler) {
+            newCursorStyle = 'grabbing';
+        } else if (hoveredAction) {
+            newCursorStyle = 'pointer'; // Hovering delete or move icon
+        } else if (sprinklers.length > 0) {
+            // Check if hovering near *any* sprinkler center for potential selection
+            const hoverRadiusMetersSq = (SELECTION_RADIUS_PX / scaleFactor) ** 2;
+            let nearSprinkler = false;
+            const mouseM = pixelsToMeters(lastMousePosPx);
+            for (const spr of sprinklers) {
+                const dx = mouseM.x - spr.x;
+                const dy = mouseM.y - spr.y;
+                if (dx * dx + dy * dy < hoverRadiusMetersSq) {
+                    nearSprinkler = true;
+                    break;
+                }
+            }
+             if(nearSprinkler || selectedSprinklerIndex !== -1) { // Pointer if near one OR one is selected (near center/icons)
+                 newCursorStyle = 'pointer';
+             }
+        }
+
+        if (newCursorStyle !== currentCursorStyle) {
+            lawnCanvas.style.cursor = newCursorStyle;
+            currentCursorStyle = newCursorStyle;
+        }
+    }
+
+
+    function populateParameters(sprinkler) {
+         // Don't reset UI here, just populate values
+         if (!sprinkler) return;
+
+         if (sprinkler.type === 'circular') {
+             circularRadiusInput.value = sprinkler.radius;
+         } else if (sprinkler.type === 'impact') {
+             impactRadiusInput.value = sprinkler.radius;
+             impactAngleInput.value = sprinkler.angle;
+             impactRotationInput.value = sprinkler.rotation;
+         }
+         // Update UI state after populating
+         updateUIState();
+    }
+
+    function handleParamChange(event) {
+         if (selectedSprinklerIndex === -1 || isMovingSprinkler) return;
+
+         const inputElement = event.target;
+         const sprinkler = sprinklers[selectedSprinklerIndex];
+         if (!sprinkler || inputElement.disabled) return;
+
+         let value = parseFloat(inputElement.value);
+         let isValid = !isNaN(value);
+         let paramName = '';
+
+         switch (inputElement.id) {
+             case 'circular-radius':
+             case 'impact-radius':
+                 paramName = 'radius';
+                 if (value <= 0 || value > 100) isValid = false; // Added reasonable max
+                 break;
+             case 'impact-angle':
+                 paramName = 'angle';
+                 if (value < 1 || value > 360) isValid = false;
+                 break;
+             case 'impact-rotation':
+                 paramName = 'rotation';
+                 // Allow any number, normalize later if needed
+                 break;
+             default:
+                 return; // Unknown input
+         }
+
+         inputElement.classList.toggle('invalid', !isValid);
+
+         if (isValid && paramName) {
+             sprinkler[paramName] = value;
+             drawLawnAndSprinklers(); // Redraw to reflect changes
+             updateCoverage(); // Recalculate coverage
+         }
+    }
+
+    function getCanvasCoords(event) {
+        const rect = lawnCanvas.getBoundingClientRect();
+        const clickX_px = event.clientX - rect.left;
+        const clickY_px = event.clientY - rect.top;
+
+        // Clamp coordinates to be within the canvas bounds
+        const clampedX = Math.max(0, Math.min(canvasWidthPx, clickX_px));
+        const clampedY = Math.max(0, Math.min(canvasHeightPx, clickY_px));
+
+        return { x: clampedX, y: clampedY };
+    }
+
+    function pixelsToMeters(coords) { return !scaleFactor ? {x:0, y:0} : { x: coords.x / scaleFactor, y: coords.y / scaleFactor }; }
+    function metersToPixels(coords) { return !scaleFactor ? {x:0, y:0} : { x: coords.x * scaleFactor, y: coords.y * scaleFactor }; }
+    function isPointInCircle(px, py, cx, cy, radius) { const dx = px - cx; const dy = py - cy; return dx * dx + dy * dy < radius * radius; }
+
+    // --- MOUSE EVENT HANDLERS ---
+
+    function handleCanvasMouseDown(event) {
+        if (!isLawnValid || event.button !== 0) return; // Only left clicks
+        const clickCoordsPx = getCanvasCoords(event);
+
+        // Check if clicking the MOVE icon of the selected sprinkler
+        if (selectedSprinklerIndex !== -1 && moveActionBounds && isPointInCircle(clickCoordsPx.x, clickCoordsPx.y, moveActionBounds.cx, moveActionBounds.cy, ACTION_ICON_CLICK_RADIUS_PX)) {
+             startMovingSprinkler(event);
+             event.stopPropagation(); // Prevent click from deselecting
+             return;
+        }
+        // Note: Selection logic moved primarily to handleCanvasClick
+    }
+
+     function handleCanvasMouseMove(event) {
+         if (!isLawnValid) return;
+         lastMousePosPx = getCanvasCoords(event); // Update last mouse position
+
+         if (isMovingSprinkler) {
+             // --- Moving Logic ---
+             const newCenterPx = { x: lastMousePosPx.x - dragOffsetX, y: lastMousePosPx.y - dragOffsetY };
+             const newCenterM = pixelsToMeters(newCenterPx);
+             // Clamp to total canvas boundaries (including terrain)
+             const clampedX_m = Math.max(0, Math.min(totalCanvasWidthMeters, newCenterM.x));
+             const clampedY_m = Math.max(0, Math.min(totalCanvasHeightMeters, newCenterM.y));
+             sprinklers[movingSprinklerIndex].x = clampedX_m;
+             sprinklers[movingSprinklerIndex].y = clampedY_m;
+             drawLawnAndSprinklers(); // Redraw while moving
+         } else {
+             // --- Hover Logic ---
+             let newHoveredAction = null;
+             if (selectedSprinklerIndex !== -1) {
+                 if (deleteActionBounds && isPointInCircle(lastMousePosPx.x, lastMousePosPx.y, deleteActionBounds.cx, deleteActionBounds.cy, ACTION_ICON_CLICK_RADIUS_PX)) {
+                     newHoveredAction = 'delete';
+                 } else if (moveActionBounds && isPointInCircle(lastMousePosPx.x, lastMousePosPx.y, moveActionBounds.cx, moveActionBounds.cy, ACTION_ICON_CLICK_RADIUS_PX)) {
+                     newHoveredAction = 'move';
+                 }
+             }
+
+             // Redraw only if hover state changes to avoid unnecessary redraws
+             if (newHoveredAction !== hoveredAction) {
+                 hoveredAction = newHoveredAction;
+                 drawLawnAndSprinklers(); // Redraw to show hover effect
+             }
+             updateCursor(); // Update cursor based on hover state etc.
+         }
+     }
+
+     function handleCanvasMouseLeave(event) {
+         lastMousePosPx = { x: -1, y: -1 }; // Reset position
+         if (hoveredAction) {
+             hoveredAction = null;
+             drawLawnAndSprinklers(); // Redraw to remove hover effect
+         }
+         // Don't stop moving if mouse leaves while dragging
+         if (!isMovingSprinkler) {
+            updateCursor(); // Reset cursor to default if appropriate
+         }
+     }
+
+     function handleCanvasClick(event) {
+         if (!isLawnValid || event.button !== 0 || isMovingSprinkler) return; // Ignore clicks during move
+
+         const clickCoordsPx = getCanvasCoords(event);
+         const clickCoordsM = pixelsToMeters(clickCoordsPx);
+
+         // 1. Check for Action Icon Click (Delete)
+         if (selectedSprinklerIndex !== -1 && hoveredAction === 'delete') {
+             // Redundant check, hoverAction should be correct, but good practice
+             if (deleteActionBounds && isPointInCircle(clickCoordsPx.x, clickCoordsPx.y, deleteActionBounds.cx, deleteActionBounds.cy, ACTION_ICON_CLICK_RADIUS_PX)) {
+                 removeSelectedSprinkler();
+                 return; // Action performed, stop processing click
+             }
+         }
+
+         // 2. Check for Sprinkler Selection/Deselection
+         let foundIndex = -1;
+         const selectionRadiusMetersSq = (SELECTION_RADIUS_PX / scaleFactor) ** 2;
+         // Iterate backwards to select the top-most sprinkler if overlapping
+         for (let i = sprinklers.length - 1; i >= 0; i--) {
+             const spr = sprinklers[i];
+             const dx = clickCoordsM.x - spr.x;
+             const dy = clickCoordsM.y - spr.y;
+             if (dx * dx + dy * dy < selectionRadiusMetersSq) {
+                 foundIndex = i;
+                 break;
+             }
+         }
+
+         const previouslySelected = selectedSprinklerIndex;
+
+         if (foundIndex !== -1) {
+             // Clicked on a sprinkler (or near its center)
+             selectedSprinklerIndex = foundIndex;
+             if (previouslySelected !== selectedSprinklerIndex) {
+                 populateParameters(sprinklers[selectedSprinklerIndex]); // Populates and calls updateUIState
+             } else {
+                // Clicked same one again, UI state likely unchanged, but redraw needed if icons appeared/disappeared potentially
+                 updateUIState();
+             }
+         } else {
+             // Clicked on empty lawn area
+             if (selectedSprinklerIndex !== -1) {
+                 // Only deselect if the click wasn't on an action icon (already handled)
+                 // or very close to the selected sprinkler's center (allows slight misses)
+                 const spr = sprinklers[selectedSprinklerIndex];
+                 const { x: cx, y: cy } = metersToPixels(spr);
+                 const deselectThreshold = Math.max(SELECTION_RADIUS_PX, ACTION_ICON_OFFSET_PX + ACTION_ICON_CLICK_RADIUS_PX); // Generous threshold
+
+                 if (!isPointInCircle(clickCoordsPx.x, clickCoordsPx.y, cx, cy, deselectThreshold)) {
+                     selectedSprinklerIndex = -1;
+                     resetParameterUI(); // Resets and calls updateUIState
+                     hoveredAction = null; // Clear hover state on deselect
+                 } else {
+                    // Clicked near selected center or icons, keep selected
+                     updateUIState(); // Ensure UI is correct
+                 }
+             } else {
+                // Clicked empty space and nothing was selected
+                updateUIState(); // Ensure UI is correct
+             }
+         }
+
+         // Redraw if selection changed or potentially if icons appeared/disappeared
+         if (previouslySelected !== selectedSprinklerIndex || foundIndex === -1) {
+             drawLawnAndSprinklers();
+         }
+         updateCursor(); // Update cursor after potential selection change
+     }
+
+
+    function startMovingSprinkler(event) {
+        if (selectedSprinklerIndex === -1) return;
+
+        movingSprinklerIndex = selectedSprinklerIndex;
+        isMovingSprinkler = true;
+        hoveredAction = null; // Clear hover state during move
+
+        const mouseCoordsPx = getCanvasCoords(event);
+        const sprinkler = sprinklers[movingSprinklerIndex];
+        const sprinklerCoordsPx = metersToPixels(sprinkler);
+
+        dragOffsetX = mouseCoordsPx.x - sprinklerCoordsPx.x;
+        dragOffsetY = mouseCoordsPx.y - sprinklerCoordsPx.y;
+
+        document.addEventListener('mousemove', handleDocumentMouseMove); // Listen on document
+        document.addEventListener('mouseup', handleDocumentMouseUp, { once: true });
+
+        updateUIState(); // Reflect moving state in UI
+        drawLawnAndSprinklers(); // Redraw with potential visual changes for moving state
+        updateCursor(); // Set grabbing cursor
+    }
+
+    // Need handlers on document for moving outside canvas
+    function handleDocumentMouseMove(event) {
+        if (!isMovingSprinkler) return;
+         // We need clientX/clientY relative to the viewport, then convert to canvas coords
+         const rect = lawnCanvas.getBoundingClientRect();
+         const mouseX_viewport = event.clientX;
+         const mouseY_viewport = event.clientY;
+         // Calculate mouse position *relative* to the canvas top-left
+         const mouseX_canvasRelative = mouseX_viewport - rect.left;
+         const mouseY_canvasRelative = mouseY_viewport - rect.top;
+
+         // Use the relative position for dragging calculations
+         const newCenterPx = { x: mouseX_canvasRelative - dragOffsetX, y: mouseY_canvasRelative - dragOffsetY };
+         const newCenterM = pixelsToMeters(newCenterPx);
+
+         // Clamp movement to total canvas boundaries (including terrain)
+         const clampedX_m = Math.max(0, Math.min(totalCanvasWidthMeters, newCenterM.x));
+         const clampedY_m = Math.max(0, Math.min(totalCanvasHeightMeters, newCenterM.y));
+
+         sprinklers[movingSprinklerIndex].x = clampedX_m;
+         sprinklers[movingSprinklerIndex].y = clampedY_m;
+
+         // Update lastMousePosPx based on the *viewport* position for hover checks after drop
+         lastMousePosPx = {x: mouseX_canvasRelative, y: mouseY_canvasRelative};
+
+         drawLawnAndSprinklers(); // Redraw while moving
+    }
+
+     function handleDocumentMouseUp(event) {
+         if (!isMovingSprinkler) return;
+
+         document.removeEventListener('mousemove', handleDocumentMouseMove);
+
+         isMovingSprinkler = false;
+         movingSprinklerIndex = -1; // Keep selectedSprinklerIndex
+         dragOffsetX = 0;
+         dragOffsetY = 0;
+
+         // Recalculate hover state based on final mouse position
+         handleCanvasMouseMove(event); // Trigger hover check with final position
+
+         updateUIState(); // Update UI (remove moving state hints)
+         updateCoverage(); // Final coverage calculation
+         drawLawnAndSprinklers(); // Final draw
+         updateCursor(); // Reset cursor if needed
+     }
+
+    function addSprinkler(x_m, y_m, type) {
+        let newSprinkler = { id: nextSprinklerId++, type: type, x: x_m, y: y_m };
+        try {
+            if (type === 'circular') {
+                // Use default value from input if user hasn't changed it, else use input's value
+                const radius = parseFloat(circularRadiusInput.value) || parseFloat(circularRadiusInput.defaultValue) || 3;
+                if (radius <= 0 || radius > 100) throw new Error("Default circular radius invalid.");
+                newSprinkler.radius = radius;
+            } else if (type === 'impact') {
+                const radius = parseFloat(impactRadiusInput.value) || parseFloat(impactRadiusInput.defaultValue) || 5;
+                const angle = parseFloat(impactAngleInput.value) || parseFloat(impactAngleInput.defaultValue) || 90;
+                const rotation = parseFloat(impactRotationInput.value) || parseFloat(impactRotationInput.defaultValue) || 0;
+                if (radius <= 0 || radius > 100) throw new Error("Default impact radius invalid.");
+                if (angle < 1 || angle > 360) throw new Error("Default impact angle invalid.");
+                newSprinkler.radius = radius;
+                newSprinkler.angle = angle;
+                newSprinkler.rotation = rotation;
+            } else {
+                return; // Unknown type
+            }
+
+            sprinklers.push(newSprinkler);
+            selectedSprinklerIndex = sprinklers.length - 1; // Select the newly added one
+            populateParameters(newSprinkler); // Populates fields and updates UI state
+            drawLawnAndSprinklers();
+            updateCoverage();
+            updatePdfButtonVisibility(); // Show PDF button when sprinkler added
+            updateCursor(); // Ensure cursor is correct after adding
+         } catch (error) {
+             console.error(`Error adding sprinkler: ${error.message}`);
+             alert(`Could not add sprinkler: ${error.message}`); // User feedback
+         }
+    }
+
+    function removeSelectedSprinkler() {
+        if (selectedSprinklerIndex !== -1) {
+            sprinklers.splice(selectedSprinklerIndex, 1);
+            selectedSprinklerIndex = -1;
+            deleteActionBounds = null; // Clear bounds
+            moveActionBounds = null;
+            hoveredAction = null; // Clear hover state
+            resetParameterUI(); // Resets fields and updates UI state
+            drawLawnAndSprinklers();
+            updateCoverage();
+            updatePdfButtonVisibility(); // Update button visibility
+            updateCursor();
+        }
+    }
+
+     function clearAllSprinklers() {
+        if (sprinklers.length > 0 && confirm("Are you sure you want to remove ALL sprinklers?")) {
+            sprinklers = [];
+            selectedSprinklerIndex = -1;
+            deleteActionBounds = null;
+            moveActionBounds = null;
+            hoveredAction = null;
+            resetParameterUI(); // Resets fields and updates UI state
+            drawLawnAndSprinklers();
+            updateCoverage();
+            updatePdfButtonVisibility(); // Update button visibility
+            updateCursor();
+        }
+    }
+
+    // --- DRAWING FUNCTIONS ---
+
+    function drawActionIcons(cx, cy) {
+         if (!trashIconLoaded || !moveIconLoaded) return; // Don't draw if images not ready
+
+         const angleOffset = Math.PI / 4; // 45 degrees
+         // Calculate icon centers
+         const deleteCx = cx - ACTION_ICON_OFFSET_PX * Math.cos(angleOffset);
+         const deleteCy = cy - ACTION_ICON_OFFSET_PX * Math.sin(angleOffset);
+         const moveCx   = cx + ACTION_ICON_OFFSET_PX * Math.cos(angleOffset);
+         const moveCy   = cy - ACTION_ICON_OFFSET_PX * Math.sin(angleOffset);
+
+         // Update bounds used for click detection
+         deleteActionBounds = { cx: deleteCx, cy: deleteCy };
+         moveActionBounds = { cx: moveCx, cy: moveCy };
+
+         ctx.save();
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.font = 'bold 11px Inter, sans-serif'; // Tooltip font
+
+         // --- Draw Delete Icon ---
+         const deleteSize = ACTION_ICON_BASE_SIZE_PX * (hoveredAction === 'delete' ? ACTION_ICON_HOVER_SCALE : 1);
+         const deleteX = deleteCx - deleteSize / 2;
+         const deleteY = deleteCy - deleteSize / 2;
+         ctx.globalAlpha = hoveredAction === 'delete' ? 1.0 : 0.85; // Slightly transparent if not hovered
+         ctx.drawImage(trashIcon, deleteX, deleteY, deleteSize, deleteSize);
+         if (hoveredAction === 'delete') {
+            drawTooltip(ctx, "Delete", deleteCx, deleteCy + deleteSize / 2 + ACTION_TOOLTIP_OFFSET_Y);
+         }
+
+         // --- Draw Move Icon ---
+         const moveSize = ACTION_ICON_BASE_SIZE_PX * (hoveredAction === 'move' ? ACTION_ICON_HOVER_SCALE : 1);
+         const moveX = moveCx - moveSize / 2;
+         const moveY = moveCy - moveSize / 2;
+         ctx.globalAlpha = hoveredAction === 'move' ? 1.0 : 0.85; // Slightly transparent if not hovered
+         ctx.drawImage(moveIcon, moveX, moveY, moveSize, moveSize);
+         if (hoveredAction === 'move') {
+            drawTooltip(ctx, "Move", moveCx, moveCy + moveSize / 2 + ACTION_TOOLTIP_OFFSET_Y);
+         }
+
+         ctx.restore();
+    }
+
+    function drawTooltip(ctx, text, x, y) {
+         const padding = 5;
+         const textMetrics = ctx.measureText(text);
+         const textWidth = textMetrics.width;
+         const rectWidth = textWidth + padding * 2;
+         const rectHeight = 18; // Fixed height for tooltip background
+
+         ctx.globalAlpha = 1.0; // Ensure tooltip is fully opaque
+         ctx.fillStyle = cssVars.actionTooltipBg || 'rgba(31, 41, 55, 0.9)';
+         ctx.fillRect(x - rectWidth / 2, y - rectHeight / 2, rectWidth, rectHeight);
+
+         ctx.fillStyle = cssVars.actionTooltipText || '#ffffff';
+         ctx.fillText(text, x, y);
+    }
+
+    function drawLawnAndSprinklers() {
+        if (!ctx || !isLawnValid || !canvasWidthPx || !canvasHeightPx) {
+            if (ctx) ctx.clearRect(0, 0, lawnCanvas.width, lawnCanvas.height);
+            return;
+        }
+        ctx.clearRect(0, 0, canvasWidthPx, canvasHeightPx);
+
+        // Clear dynamic bounds before redraw
+        deleteActionBounds = null;
+        moveActionBounds = null;
+
+        // --- Draw Terrain Background (entire canvas) ---
+        ctx.fillStyle = cssVars.terrainColor || '#f3f4f6';
+        ctx.fillRect(0, 0, canvasWidthPx, canvasHeightPx);
+
+        // --- Draw Lawn Area (centered with margin) ---
+        const lawnOffsetX_px = terrainMarginMeters * scaleFactor;
+        const lawnOffsetY_px = terrainMarginMeters * scaleFactor;
+        const lawnWidth_px = lawnWidthMeters * scaleFactor;
+        const lawnHeight_px = lawnHeightMeters * scaleFactor;
+
+        // Draw lawn fill
+        ctx.fillStyle = cssVars.lawnColor || '#ecfdf5';
+        ctx.fillRect(lawnOffsetX_px, lawnOffsetY_px, lawnWidth_px, lawnHeight_px);
+
+        // Draw lawn border
+        ctx.strokeStyle = cssVars.lawnBorderColor || '#a7f3d0';
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(lawnOffsetX_px, lawnOffsetY_px, lawnWidth_px, lawnHeight_px);
+
+        // --- Draw Sprinklers ---
+        sprinklers.forEach((sprinkler, index) => {
+            const isSelected = (index === selectedSprinklerIndex);
+            const isBeingMoved = (isMovingSprinkler && index === movingSprinklerIndex);
+            const { x: cx, y: cy } = metersToPixels(sprinkler);
+            const cr = Math.max(1, sprinkler.radius * scaleFactor); // Ensure min 1px radius for visibility
+
+            ctx.save();
+            // Adjust opacity: Dim if being moved, slightly dim if not selected, full if selected
+            ctx.globalAlpha = isBeingMoved ? 0.5 : (isSelected ? 1.0 : 0.8);
+
+            // --- Draw Sprinkler Coverage Area ---
+            ctx.fillStyle = cssVars.sprinklerFill;
+            ctx.strokeStyle = isSelected ? cssVars.selectedSprinklerBorder : cssVars.sprinklerBorder;
+            ctx.lineWidth = isSelected ? 2.0 : 1.5; // Thicker lines
+
+            if (sprinkler.type === 'circular') {
+                ctx.beginPath();
+                ctx.arc(cx, cy, cr, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+            } else if (sprinkler.type === 'impact') {
+                const angleRad = sprinkler.angle * Math.PI / 180;
+                // Normalize rotation to be between 0 and 2PI for calculations, but keep original for display/editing
+                const userRotationRad = (sprinkler.rotation % 360) * Math.PI / 180;
+                const startAngle = userRotationRad;
+                const endAngle = startAngle + angleRad;
+
+                // Draw filled sector
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, cr, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fill();
+
+                // Draw stroke outline for the arc and sides
+                ctx.beginPath();
+                ctx.arc(cx, cy, cr, startAngle, endAngle);
+                if (sprinkler.angle < 360) { // Don't draw closing line if it's a full circle
+                   ctx.lineTo(cx, cy); // Line back to center only needed for stroke? No, arc closes path
+                   ctx.closePath(); // Connect ends back to center for stroke
+                }
+                 ctx.stroke(); // Stroke the arc + closing lines
+
+                // Draw subtle start angle line (optional, can be noisy)
+                // ctx.beginPath();
+                // ctx.moveTo(cx, cy);
+                // ctx.lineTo(cx + cr * Math.cos(startAngle), cy + cr * Math.sin(startAngle));
+                // ctx.strokeStyle = isSelected ? cssVars.selectedSprinklerCenter : 'rgba(60, 60, 60, 0.3)';
+                // ctx.lineWidth = isSelected ? 1.5 : 1;
+                // ctx.setLineDash(isSelected ? [] : [2, 3]);
+                // ctx.stroke();
+                // ctx.setLineDash([]);
+            }
+
+            // --- Draw Sprinkler Center Point ---
+             const centerPointSize = isSelected ? 5.0 : 4.0; // Slightly larger centers
+             ctx.beginPath();
+             ctx.arc(cx, cy, centerPointSize, 0, 2 * Math.PI);
+             ctx.fillStyle = isSelected ? cssVars.selectedSprinklerCenter : cssVars.sprinklerCenter;
+             // Add white outline for better visibility, especially when selected
+             ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+             ctx.lineWidth = 1.5;
+             ctx.stroke();
+             ctx.fill();
+
+             ctx.restore(); // Restore alpha and other settings
+
+            // --- Draw Action Icons (Only if selected and NOT being moved) ---
+            if (isSelected && !isBeingMoved) {
+                drawActionIcons(cx, cy);
+            }
+        });
+    }
+
+    // --- COVERAGE CALCULATION (Unchanged logic, but wrapped in requestAnimationFrame) ---
+    function isPointInSprinkler(pointX, pointY, sprinkler) {
+        const dx = pointX - sprinkler.x;
+        const dy = pointY - sprinkler.y;
+        const distanceSq = dx * dx + dy * dy;
+        const radiusSq = sprinkler.radius * sprinkler.radius;
+
+        // Add a small epsilon for floating point comparisons
+        if (distanceSq > radiusSq + 1e-9) {
+            return false;
+        }
+
+        if (sprinkler.type === 'circular') {
+            return true;
+        }
+
+        if (sprinkler.type === 'impact') {
+            // Handle edge case: angle near 360 treated as full circle
+             if (Math.abs(sprinkler.angle - 360) < 1e-6 || sprinkler.angle > 360) {
+                 return true;
+             }
+
+            const angleRad = sprinkler.angle * Math.PI / 180;
+            const rotationRad = sprinkler.rotation * Math.PI / 180;
+            const twoPi = 2 * Math.PI;
+
+            // Normalize angles to [0, 2PI) range for comparison
+            const normalize = (angle) => ((angle % twoPi) + twoPi) % twoPi;
+
+            let startAngle = normalize(rotationRad);
+            let endAngle = normalize(startAngle + angleRad);
+            let pointAngle = Math.atan2(dy, dx); // Returns angle in [-PI, PI]
+            pointAngle = normalize(pointAngle); // Convert point angle to [0, 2PI)
+
+            // Check if the point angle falls within the arc segment
+            if (startAngle <= endAngle) {
+                // Normal case (arc doesn't cross the 0-angle line)
+                return pointAngle >= startAngle && pointAngle <= endAngle;
+            } else {
+                // Arc crosses the 0-angle line (e.g., start=350deg, end=10deg)
+                return pointAngle >= startAngle || pointAngle <= endAngle;
+            }
+        }
+        return false; // Should not happen if type is valid
+    }
+
+    function updateCoverage() {
+         requestAnimationFrame(() => {
+             if (!isLawnValid || lawnWidthMeters <= 0 || lawnHeightMeters <= 0) {
+                 coveragePercentageSpan.textContent = `---`;
+                 overlapPercentageSpan.textContent = `---`;
+                 uncoveredPercentageSpan.textContent = `---`;
+                 efficiencyPercentageSpan.textContent = `---`;
+                 // Optionally reset background/color styles if they were dynamic
+                 [coveragePercentageSpan, overlapPercentageSpan, uncoveredPercentageSpan, efficiencyPercentageSpan].forEach(span => {
+                     span.style.backgroundColor = ''; 
+                     span.style.color = '';
+                 });
+                 return;
+             }
+             if (sprinklers.length === 0) {
+                 coveragePercentageSpan.textContent = `0.00%`;
+                 overlapPercentageSpan.textContent = `0.00%`;
+                 uncoveredPercentageSpan.textContent = `100.00%`;
+                 efficiencyPercentageSpan.textContent = `0.00%`;
+                 // Apply default styles
+                 coveragePercentageSpan.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+                 coveragePercentageSpan.style.color = '#047857';
+                 overlapPercentageSpan.style.backgroundColor = 'rgba(245, 158, 11, 0.15)';
+                 overlapPercentageSpan.style.color = '#b45309';
+                 uncoveredPercentageSpan.style.backgroundColor = 'rgba(107, 114, 128, 0.15)';
+                 uncoveredPercentageSpan.style.color = '#4b5563';
+                 efficiencyPercentageSpan.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+                 efficiencyPercentageSpan.style.color = '#1e40af';
+                 return;
+             }
+
+             let coveredPoints = 0;
+             let overlapPoints = 0;
+             let sprinklerCoverageOnLawn = 0;
+             let totalSprinklerCoverage = 0;
+             const lawnPoints = MONTE_CARLO_POINTS;
+             const terrainPoints = Math.floor(MONTE_CARLO_POINTS * 0.5); // Sample terrain with fewer points
+
+             // Calculate lawn coverage (existing logic)
+             const lawnOffsetX = terrainMarginMeters;
+             const lawnOffsetY = terrainMarginMeters;
+             
+             for (let i = 0; i < lawnPoints; i++) {
+                 const randomX = lawnOffsetX + (Math.random() * lawnWidthMeters);
+                 const randomY = lawnOffsetY + (Math.random() * lawnHeightMeters);
+                 let coverageCount = 0;
+                 for (const sprinkler of sprinklers) {
+                     if (isPointInSprinkler(randomX, randomY, sprinkler)) {
+                         coverageCount++;
+                     }
+                 }
+                 if (coverageCount >= 1) coveredPoints++;
+                 if (coverageCount >= 2) overlapPoints++;
+             }
+
+             // Calculate efficiency: sample entire terrain area
+             for (let i = 0; i < terrainPoints; i++) {
+                 const randomX = Math.random() * totalCanvasWidthMeters;
+                 const randomY = Math.random() * totalCanvasHeightMeters;
+                 const isOnLawn = (randomX >= lawnOffsetX && randomX <= lawnOffsetX + lawnWidthMeters &&
+                                  randomY >= lawnOffsetY && randomY <= lawnOffsetY + lawnHeightMeters);
+                 
+                 for (const sprinkler of sprinklers) {
+                     if (isPointInSprinkler(randomX, randomY, sprinkler)) {
+                         totalSprinklerCoverage++;
+                         if (isOnLawn) {
+                             sprinklerCoverageOnLawn++;
+                         }
+                         break; // Count point only once
+                     }
+                 }
+             }
+
+             const coveragePercent = (coveredPoints / lawnPoints) * 100;
+             const overlapPercent = (overlapPoints / lawnPoints) * 100;
+             const uncoveredPercent = Math.max(0, 100 - coveragePercent); // Ensure non-negative
+             const efficiencyPercent = totalSprinklerCoverage > 0 
+                 ? (sprinklerCoverageOnLawn / totalSprinklerCoverage) * 100 
+                 : 0;
+
+             coveragePercentageSpan.textContent = `${coveragePercent.toFixed(2)}%`;
+             overlapPercentageSpan.textContent = `${overlapPercent.toFixed(2)}%`;
+             uncoveredPercentageSpan.textContent = `${uncoveredPercent.toFixed(2)}%`;
+             efficiencyPercentageSpan.textContent = `${efficiencyPercent.toFixed(2)}%`;
+
+             // Apply styles
+             coveragePercentageSpan.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+             coveragePercentageSpan.style.color = '#047857';
+             overlapPercentageSpan.style.backgroundColor = 'rgba(245, 158, 11, 0.15)';
+             overlapPercentageSpan.style.color = '#b45309';
+             uncoveredPercentageSpan.style.backgroundColor = 'rgba(107, 114, 128, 0.15)';
+             uncoveredPercentageSpan.style.color = '#4b5563';
+             
+             // Color code efficiency: green if high, amber if medium, red if low
+             if (efficiencyPercent >= 80) {
+                 efficiencyPercentageSpan.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+                 efficiencyPercentageSpan.style.color = '#047857';
+             } else if (efficiencyPercent >= 60) {
+                 efficiencyPercentageSpan.style.backgroundColor = 'rgba(245, 158, 11, 0.15)';
+                 efficiencyPercentageSpan.style.color = '#b45309';
+             } else {
+                 efficiencyPercentageSpan.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+                 efficiencyPercentageSpan.style.color = '#dc2626';
+             }
+
+        });
+    }
+
+    // --- HELPER: Update PDF Button Visibility ---
+    function updatePdfButtonVisibility() {
+        if (sprinklers.length > 0) {
+            downloadPdfBtn.classList.add('visible');
+        } else {
+            downloadPdfBtn.classList.remove('visible');
+        }
+    }
+
+    // --- PDF GENERATION FUNCTION ---
+    const PDF_LOADING_DURATION = 5000; // 5 seconds - configurable
+    
+    const loadingMessages = [
+        'Initializing PDF engine...',
+        'Analyzing sprinkler positions...',
+        'Calculating coverage zones...',
+        'Generating engineering diagrams...',
+        'Optimizing schematic layout...',
+        'Compiling performance data...',
+        'Finalizing document structure...',
+        'Almost ready...'
+    ];
+
+    function generatePDFSchematic() {
+        if (!isLawnValid || sprinklers.length === 0) {
+            alert('Please set up your lawn and add at least one sprinkler before generating the PDF.');
+            return;
+        }
+
+        // Show loading modal
+        const modal = document.getElementById('pdf-loading-modal');
+        const loadingBar = document.getElementById('loading-bar');
+        const loadingPercent = document.getElementById('loading-percent');
+        const loadingMessage = document.getElementById('loading-message');
+        const modalDownloadBtn = document.getElementById('modal-download-btn');
+        
+        // Reset and hide download button
+        modalDownloadBtn.style.display = 'none';
+        modal.classList.add('active');
+        
+        let progress = 0;
+        const intervalTime = PDF_LOADING_DURATION / 100; // Update every 1% of total duration
+        let messageIndex = 0;
+        let pdfGenerated = false;
+        
+        const progressInterval = setInterval(() => {
+            progress++;
+            loadingBar.style.width = progress + '%';
+            loadingPercent.textContent = progress + '%';
+            
+            // Change message every ~12.5% (8 messages total)
+            const newMessageIndex = Math.floor((progress / 100) * loadingMessages.length);
+            if (newMessageIndex !== messageIndex && newMessageIndex < loadingMessages.length) {
+                messageIndex = newMessageIndex;
+                loadingMessage.textContent = loadingMessages[messageIndex];
+            }
+            
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+                loadingMessage.textContent = 'PDF ready!';
+                
+                // Generate PDF in background
+                if (!pdfGenerated) {
+                    generateActualPDF();
+                    pdfGenerated = true;
+                }
+                
+                // Show download button with smooth animation
+                setTimeout(() => {
+                    modalDownloadBtn.style.display = 'flex';
+                    modalDownloadBtn.style.opacity = '0';
+                    modalDownloadBtn.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        modalDownloadBtn.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                        modalDownloadBtn.style.opacity = '1';
+                        modalDownloadBtn.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 200);
+            }
+        }, intervalTime);
+        
+        // Handle download button click
+        modalDownloadBtn.onclick = () => {
+            // Save the PDF
+            const filename = `irrigation-plan-${new Date().getTime()}.pdf`;
+            window.generatedPDF.save(filename);
+            
+            // Close modal
+            modal.classList.remove('active');
+            
+            // Reset for next time
+            setTimeout(() => {
+                loadingBar.style.width = '0%';
+                loadingPercent.textContent = '0%';
+                loadingMessage.textContent = loadingMessages[0];
+                modalDownloadBtn.style.display = 'none';
+            }, 300);
+        };
+    }
+
+    function generateActualPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('portrait', 'mm', 'a4');
+        
+        // Use Courier (monospace engineering font)
+        doc.setFont('courier', 'normal');
+        
+        // Page dimensions
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 20;
+        
+        // Engineering color palette
+        const primaryColor = [31, 41, 55]; // Dark gray/black for engineering
+        const accentColor = [79, 70, 229]; // Accent blue
+        const lawnColor = [220, 252, 231]; // Very light green
+        const terrainColor = [249, 250, 251]; // Very light gray
+        const gridColor = [209, 213, 219];
+        const lightBlue = [191, 219, 254]; // Light blue for coverage
+        
+        // Title Header - Engineering Style
+        doc.setFillColor(240, 240, 240);
+        doc.rect(0, 0, pageWidth, 30, 'F');
+        doc.setTextColor(...primaryColor);
+        doc.setFontSize(20);
+        doc.setFont('courier', 'bold');
+        doc.text('IRRIGATION SYSTEM SCHEMATIC', pageWidth / 2, 12, { align: 'center' });
+        doc.setFontSize(9);
+        doc.setFont('courier', 'normal');
+        const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        doc.text(`DATE: ${today}`, pageWidth / 2, 20, { align: 'center' });
+        
+        // Dimensions Section
+        let yPos = 40;
+        doc.setFontSize(11);
+        doc.setFont('courier', 'bold');
+        doc.text('DIMENSIONS', margin, yPos);
+        
+        yPos += 7;
+        doc.setFontSize(9);
+        doc.setFont('courier', 'normal');
+        doc.text(`LENGTH: ${lawnWidthMeters.toFixed(2)} m`, margin, yPos);
+        doc.text(`WIDTH: ${lawnHeightMeters.toFixed(2)} m`, margin + 55, yPos);
+        doc.text(`AREA: ${(lawnWidthMeters * lawnHeightMeters).toFixed(2)} m²`, margin + 110, yPos);
+        
+        // Draw Schematic
+        yPos += 12;
+        doc.setFontSize(11);
+        doc.setFont('courier', 'bold');
+        doc.text('PLAN VIEW', margin, yPos);
+        
+        yPos += 3;
+        const diagramStartY = yPos;
+        const diagramWidth = pageWidth - 2 * margin;
+        const diagramHeight = 120;
+        
+        // Calculate scale
+        const scaleX = diagramWidth / totalCanvasWidthMeters;
+        const scaleY = diagramHeight / totalCanvasHeightMeters;
+        const diagramScale = Math.min(scaleX, scaleY) * 0.9;
+        
+        const scaledLawnWidth = lawnWidthMeters * diagramScale;
+        const scaledLawnHeight = lawnHeightMeters * diagramScale;
+        const scaledTotalWidth = totalCanvasWidthMeters * diagramScale;
+        const scaledTotalHeight = totalCanvasHeightMeters * diagramScale;
+        
+        // Center the diagram
+        const diagramCenterX = margin + diagramWidth / 2;
+        const diagramCenterY = yPos + diagramHeight / 2;
+        const terrainStartX = diagramCenterX - scaledTotalWidth / 2;
+        const terrainStartY = diagramCenterY - scaledTotalHeight / 2;
+        const lawnStartX = terrainStartX + (terrainMarginMeters * diagramScale);
+        const lawnStartY = terrainStartY + (terrainMarginMeters * diagramScale);
+        
+        // Draw terrain background
+        doc.setFillColor(...terrainColor);
+        doc.rect(terrainStartX, terrainStartY, scaledTotalWidth, scaledTotalHeight, 'F');
+        
+        // Draw grid
+        doc.setDrawColor(...gridColor);
+        doc.setLineWidth(0.1);
+        for (let x = 0; x <= totalCanvasWidthMeters; x += 1) {
+            const xPos = terrainStartX + x * diagramScale;
+            doc.line(xPos, terrainStartY, xPos, terrainStartY + scaledTotalHeight);
+        }
+        for (let y = 0; y <= totalCanvasHeightMeters; y += 1) {
+            const yPos = terrainStartY + y * diagramScale;
+            doc.line(terrainStartX, yPos, terrainStartX + scaledTotalWidth, yPos);
+        }
+        
+        // Draw lawn area
+        doc.setFillColor(...lawnColor);
+        doc.setDrawColor(100, 116, 139);
+        doc.setLineWidth(0.8);
+        doc.rect(lawnStartX, lawnStartY, scaledLawnWidth, scaledLawnHeight, 'FD');
+        
+        // Draw dimensions
+        doc.setTextColor(...primaryColor);
+        doc.setFontSize(8);
+        doc.setFont('courier', 'normal');
+        
+        // Top dimension
+        doc.setDrawColor(...primaryColor);
+        doc.setLineWidth(0.3);
+        doc.line(lawnStartX, lawnStartY - 3, lawnStartX + scaledLawnWidth, lawnStartY - 3);
+        doc.line(lawnStartX, lawnStartY - 4, lawnStartX, lawnStartY - 2);
+        doc.line(lawnStartX + scaledLawnWidth, lawnStartY - 4, lawnStartX + scaledLawnWidth, lawnStartY - 2);
+        doc.text(`${lawnWidthMeters.toFixed(2)}`, lawnStartX + scaledLawnWidth / 2, lawnStartY - 5, { align: 'center' });
+        
+        // Left dimension
+        doc.line(lawnStartX - 3, lawnStartY, lawnStartX - 3, lawnStartY + scaledLawnHeight);
+        doc.line(lawnStartX - 4, lawnStartY, lawnStartX - 2, lawnStartY);
+        doc.line(lawnStartX - 4, lawnStartY + scaledLawnHeight, lawnStartX - 2, lawnStartY + scaledLawnHeight);
+        doc.text(`${lawnHeightMeters.toFixed(2)}`, lawnStartX - 6, lawnStartY + scaledLawnHeight / 2, { align: 'center', angle: 90 });
+        
+        // Draw sprinklers
+        sprinklers.forEach((sprinkler, index) => {
+            const sprX = terrainStartX + sprinkler.x * diagramScale;
+            const sprY = terrainStartY + sprinkler.y * diagramScale;
+            const sprRadius = sprinkler.radius * diagramScale;
+            
+            // Draw coverage area (very light and transparent)
+            if (sprinkler.type === 'circular') {
+                // Only draw border, no fill (transparent background)
+                doc.setDrawColor(180, 200, 230); // Subtle light blue
+                doc.setLineWidth(0.15);
+                doc.setLineDash([1, 1], 0); // Dashed line pattern
+                doc.circle(sprX, sprY, sprRadius, 'S'); // S = Stroke only (no fill)
+                doc.setLineDash([]); // Reset to solid
+            } else if (sprinkler.type === 'impact') {
+                const startAngle = sprinkler.rotation;
+                const endAngle = startAngle + sprinkler.angle;
+                // Only draw border, no fill (transparent background)
+                doc.setDrawColor(180, 200, 230); // Subtle light blue
+                doc.setLineWidth(0.15);
+                doc.setLineDash([1, 1], 0); // Dashed line
+                
+                // Draw the arc sector properly
+                const segments = 32;
+                const angleStep = (endAngle - startAngle) / segments;
+                
+                // Start path at center
+                doc.line(sprX, sprY, sprX, sprY); // Dummy line to start path
+                
+                // Draw arc
+                for (let i = 0; i <= segments; i++) {
+                    const angle = (startAngle + angleStep * i) * Math.PI / 180;
+                    const x = sprX + sprRadius * Math.cos(angle);
+                    const y = sprY + sprRadius * Math.sin(angle);
+                    if (i === 0) {
+                        doc.line(sprX, sprY, x, y);
+                    } else {
+                        const prevAngle = (startAngle + angleStep * (i - 1)) * Math.PI / 180;
+                        const prevX = sprX + sprRadius * Math.cos(prevAngle);
+                        const prevY = sprY + sprRadius * Math.sin(prevAngle);
+                        doc.line(prevX, prevY, x, y);
+                    }
+                }
+                
+                // Close back to center
+                const lastAngle = endAngle * Math.PI / 180;
+                const lastX = sprX + sprRadius * Math.cos(lastAngle);
+                const lastY = sprY + sprRadius * Math.sin(lastAngle);
+                doc.line(lastX, lastY, sprX, sprY);
+                
+                doc.setLineDash([]); // Reset to solid
+            }
+            
+            // Draw sprinkler center (small cross)
+            doc.setDrawColor(...primaryColor);
+            doc.setLineWidth(0.5);
+            const crossSize = 1.5;
+            doc.line(sprX - crossSize, sprY, sprX + crossSize, sprY);
+            doc.line(sprX, sprY - crossSize, sprX, sprY + crossSize);
+            
+            // Draw label (keep it on screen)
+            doc.setFillColor(255, 255, 255);
+            doc.setDrawColor(...primaryColor);
+            
+            // Calculate label position, keeping it within bounds
+            let labelY = sprY - sprRadius - 4;
+            // If label would go off top, move it inside or to the side
+            if (labelY < terrainStartY + 5) {
+                labelY = sprY + sprRadius + 6; // Move below
+            }
+            // If still off screen, move to the side
+            if (labelY < terrainStartY + 5) {
+                labelY = sprY;
+            }
+            
+            doc.circle(sprX, labelY, 2.5, 'FD');
+            doc.setTextColor(...primaryColor);
+            doc.setFontSize(8);
+            doc.setFont('courier', 'bold');
+            doc.text(`${index + 1}`, sprX, labelY + 1, { align: 'center' });
+        });
+        
+        // Sprinkler Schedule Table
+        yPos = diagramStartY + diagramHeight + 8;
+        doc.setTextColor(...primaryColor);
+        doc.setFontSize(11);
+        doc.setFont('courier', 'bold');
+        doc.text('SPRINKLER SCHEDULE', margin, yPos);
+        
+        yPos += 6;
+        doc.setFontSize(8);
+        doc.setFont('courier', 'bold');
+        
+        // Table headers
+        const col1 = margin;
+        const col2 = margin + 12;
+        const col3 = margin + 40;
+        const col4 = margin + 80;
+        const col5 = margin + 115;
+        const col6 = margin + 150;
+        
+        doc.text('ID', col1, yPos);
+        doc.text('TYPE', col2, yPos);
+        doc.text('POSITION [X,Y]', col3, yPos);
+        doc.text('RADIUS', col4, yPos);
+        doc.text('ANGLE', col5, yPos);
+        doc.text('ROTATION', col6, yPos);
+        
+        yPos += 1;
+        doc.setDrawColor(...gridColor);
+        doc.setLineWidth(0.3);
+        doc.line(margin, yPos, pageWidth - margin, yPos);
+        
+        yPos += 4;
+        doc.setFont('courier', 'normal');
+        
+        const lawnOffsetX = terrainMarginMeters;
+        const lawnOffsetY = terrainMarginMeters;
+        
+        sprinklers.forEach((sprinkler, index) => {
+            if (yPos > pageHeight - 40) {
+                doc.addPage();
+                yPos = margin;
+            }
+            
+            const relX = sprinkler.x - lawnOffsetX;
+            const relY = sprinkler.y - lawnOffsetY;
+            
+            doc.text(`${index + 1}`, col1, yPos);
+            doc.text(sprinkler.type === 'circular' ? 'CIRC' : 'IMPT', col2, yPos);
+            doc.text(`[${relX.toFixed(2)}, ${relY.toFixed(2)}]`, col3, yPos);
+            doc.text(`${sprinkler.radius.toFixed(2)} m`, col4, yPos);
+            doc.text(sprinkler.type === 'impact' ? `${sprinkler.angle}°` : '--', col5, yPos);
+            doc.text(sprinkler.type === 'impact' ? `${sprinkler.rotation}°` : '--', col6, yPos);
+            
+            yPos += 5;
+        });
+        
+        // Notes section (right after schedule)
+        yPos += 8;
+        doc.setFontSize(7);
+        doc.setFont('courier', 'italic');
+        doc.setTextColor(...primaryColor);
+        doc.text('NOTE: Position coordinates relative to lawn origin (top-left corner).', margin, yPos);
+        
+        // Performance Data
+        yPos += 10;
+        if (yPos > pageHeight - 50) {
+            doc.addPage();
+            yPos = margin;
+        }
+        
+        doc.setFontSize(11);
+        doc.setFont('courier', 'bold');
+        doc.text('PERFORMANCE DATA', margin, yPos);
+        
+        yPos += 6;
+        doc.setFontSize(8);
+        doc.setFont('courier', 'normal');
+        
+        const coverageText = coveragePercentageSpan.textContent;
+        const overlapText = overlapPercentageSpan.textContent;
+        const uncoveredText = uncoveredPercentageSpan.textContent;
+        const efficiencyText = efficiencyPercentageSpan.textContent;
+        
+        doc.text(`COVERAGE:        ${coverageText.padStart(8)}`, margin, yPos);
+        yPos += 5;
+        doc.text(`OVERLAP:         ${overlapText.padStart(8)}`, margin, yPos);
+        yPos += 5;
+        doc.text(`UNCOVERED:       ${uncoveredText.padStart(8)}`, margin, yPos);
+        yPos += 5;
+        doc.text(`EFFICIENCY:      ${efficiencyText.padStart(8)}`, margin, yPos);
+        
+        // Legend
+        yPos += 10;
+        if (yPos > pageHeight - 35) {
+            doc.addPage();
+            yPos = margin;
+        }
+        
+        doc.setFontSize(11);
+        doc.setFont('courier', 'bold');
+        doc.text('LEGEND', margin, yPos);
+        
+        yPos += 6;
+        doc.setFontSize(8);
+        doc.setFont('courier', 'normal');
+        
+        // Lawn area
+        doc.setFillColor(...lawnColor);
+        doc.setDrawColor(100, 116, 139);
+        doc.setLineWidth(0.3);
+        doc.rect(margin, yPos - 2.5, 6, 3, 'FD');
+        doc.text('LAWN AREA', margin + 9, yPos);
+        
+        yPos += 5;
+        // Coverage zone (dashed circle, no fill - transparent)
+        doc.setDrawColor(180, 200, 230); // Subtle light blue
+        doc.setLineWidth(0.15);
+        doc.setLineDash([1, 1], 0); // Dashed line
+        doc.circle(margin + 3, yPos - 1, 2, 'S'); // S = Stroke only
+        doc.setLineDash([]); // Reset
+        doc.text('COVERAGE ZONE', margin + 9, yPos);
+        
+        yPos += 5;
+        // Sprinkler
+        doc.setDrawColor(...primaryColor);
+        doc.setLineWidth(0.5);
+        doc.line(margin + 1.5, yPos - 1, margin + 4.5, yPos - 1);
+        doc.line(margin + 3, yPos - 2.5, margin + 3, yPos + 0.5);
+        doc.text('SPRINKLER', margin + 9, yPos);
+        
+        yPos += 5;
+        // Grid
+        doc.setDrawColor(...gridColor);
+        doc.setLineWidth(0.2);
+        doc.line(margin, yPos - 2, margin + 6, yPos - 2);
+        doc.line(margin + 2, yPos - 2, margin + 2, yPos + 1);
+        doc.line(margin + 4, yPos - 2, margin + 4, yPos + 1);
+        doc.text('1m GRID', margin + 9, yPos);
+        
+        // Footer info (moved above notes to avoid overlap)
+        yPos += 8;
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.setFont('courier', 'normal');
+        doc.text('Generated by Lawn Sprinkler Simulator', margin, yPos);
+        doc.text(`Sheet 1 of 1`, pageWidth - margin, yPos, { align: 'right' });
+        
+        // Store PDF globally for download button
+        window.generatedPDF = doc;
+    }
+
+    // --- INTERACTIVE GUIDE SYSTEM ---
+    const guideSteps = [
+        {
+            id: 'step1',
+            target: '#define-lawn-card',
+            highlightMultiple: ['#define-lawn-card'],
+            title: '👋 Welcome! Let\'s Start',
+            message: 'First, enter your lawn dimensions. Type the length and width of your lawn in meters, then click "Set Dimensions".',
+            position: 'bottom',
+            arrow: 'top',
+            checkComplete: () => isLawnValid
+        },
+        {
+            id: 'step2',
+            target: '.card-toggle-btn',
+            title: '💡 Pro Tip',
+            message: 'You can click this arrow to collapse the card and save screen space. This keeps your workspace clean and tidy!',
+            position: 'bottom',
+            arrow: 'top',
+            checkComplete: null // Manual confirmation required
+        },
+        {
+            id: 'step3',
+            target: '.tool-button-group',
+            highlightMultiple: ['#tool-circular', '#tool-impact'],
+            title: '➕ Add Sprinklers',
+            message: 'Drag and drop sprinklers from here onto your lawn. Choose between circular or impact (sector) sprinklers!',
+            position: 'left',
+            arrow: 'left',
+            checkComplete: () => sprinklers.length > 0
+        },
+        {
+            id: 'step4',
+            target: '#sprinkler-params',
+            title: '⚙️ Configure Parameters',
+            message: 'After placing sprinklers, click on them to select and adjust their parameters here. Change radius, angle, and rotation to optimize coverage!',
+            position: 'left',
+            arrow: 'left',
+            checkComplete: null // Manual confirmation required
+        },
+        {
+            id: 'step5',
+            target: '.results-area',
+            title: '📊 Check Your Stats',
+            message: 'Monitor your coverage analysis here. Aim for high coverage and good efficiency while minimizing waste on non-lawn areas!',
+            position: 'top',
+            arrow: 'bottom',
+            checkComplete: null // Manual confirmation required
+        },
+        {
+            id: 'step6',
+            target: '#download-pdf-btn',
+            title: '📄 Download Your Plan',
+            message: 'When you\'re happy with your design, click here to prepare and download a professional PDF schematic!',
+            position: 'top',
+            arrow: 'bottom',
+            checkComplete: null // Manual confirmation required
+        }
+    ];
+    
+    let currentGuideStep = 0;
+    let guideActive = false;
+    const guideOverlay = document.getElementById('guide-overlay');
+    
+    function startGuide() {
+        guideActive = true;
+        currentGuideStep = 0;
+        showGuideStep(currentGuideStep);
+    }
+    
+    function showGuideStep(stepIndex) {
+        if (stepIndex >= guideSteps.length) {
+            endGuide();
+            return;
+        }
+        
+        const step = guideSteps[stepIndex];
+        
+        // Special handling for step 6 (PDF button) - temporarily show it for tutorial
+        if (stepIndex === 5) {
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            if (downloadPdfBtn && !downloadPdfBtn.classList.contains('visible')) {
+                downloadPdfBtn.classList.add('visible');
+                downloadPdfBtn.dataset.tutorialVisible = 'true';
+            }
+        }
+        
+        const targetElement = document.querySelector(step.target);
+        
+        if (!targetElement) {
+            console.warn('Guide target not found:', step.target);
+            nextGuideStep();
+            return;
+        }
+        
+        // Clear previous guide elements
+        document.querySelectorAll('.guide-highlight, .guide-tooltip').forEach(el => el.remove());
+        
+        // Show overlay
+        guideOverlay.classList.add('active');
+        
+        // Highlight target(s)
+        const targetsToHighlight = step.highlightMultiple || [step.target];
+        targetsToHighlight.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) {
+                const rect = element.getBoundingClientRect();
+                const highlight = document.createElement('div');
+                highlight.className = 'guide-highlight';
+                highlight.style.top = (rect.top - 8) + 'px';
+                highlight.style.left = (rect.left - 8) + 'px';
+                highlight.style.width = (rect.width + 16) + 'px';
+                highlight.style.height = (rect.height + 16) + 'px';
+                document.body.appendChild(highlight);
+            }
+        });
+        
+        // Create tooltip
+        const arrowDirection = step.position === 'top' ? 'bottom' : step.arrow;
+        const tooltip = document.createElement('div');
+        tooltip.className = `guide-tooltip arrow-${arrowDirection}`;
+        tooltip.innerHTML = `
+            <h4>${step.title}</h4>
+            <p>${step.message}</p>
+            <div class="guide-actions">
+                <button class="guide-btn guide-btn-skip" onclick="skipGuide()">Skip Tour</button>
+                <button class="guide-btn guide-btn-next" onclick="nextGuideStep()">
+                    ${stepIndex === guideSteps.length - 1 ? 'Got it!' : 'Next'} →
+                </button>
+            </div>
+            <div class="guide-step-indicator">Step ${stepIndex + 1} of ${guideSteps.length}</div>
+        `;
+        
+        // Position tooltip
+        const rect = targetElement.getBoundingClientRect();
+        if (step.position === 'bottom') {
+            tooltip.style.top = (rect.bottom + 20) + 'px';
+            tooltip.style.left = rect.left + 'px';
+        } else if (step.position === 'left') {
+            tooltip.style.top = rect.top + 'px';
+            tooltip.style.left = (rect.left - 340) + 'px';
+        } else if (step.position === 'top') {
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 20) + 'px';
+            tooltip.style.left = rect.left + 'px';
+            // Need to adjust after appending to get actual height
+            setTimeout(() => {
+                const tooltipRect = tooltip.getBoundingClientRect();
+                tooltip.style.top = (rect.top - tooltipRect.height - 20) + 'px';
+            }, 10);
+        }
+        
+        document.body.appendChild(tooltip);
+        
+        // Auto-advance when step is completed (only for steps with checkComplete)
+        if (step.checkComplete) {
+            const checkInterval = setInterval(() => {
+                if (step.checkComplete()) {
+                    clearInterval(checkInterval);
+                    setTimeout(() => {
+                        if (guideActive && currentGuideStep === stepIndex) {
+                            nextGuideStep();
+                        }
+                    }, 800);
+                }
+            }, 500);
+        }
+    }
+    
+    window.nextGuideStep = function() {
+        // Restore PDF button state if we're leaving step 6
+        if (currentGuideStep === 5) {
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            if (downloadPdfBtn && downloadPdfBtn.dataset.tutorialVisible === 'true') {
+                delete downloadPdfBtn.dataset.tutorialVisible;
+                // Hide if there are no sprinklers
+                if (sprinklers.length === 0) {
+                    downloadPdfBtn.classList.remove('visible');
+                }
+            }
+        }
+        
+        currentGuideStep++;
+        if (currentGuideStep < guideSteps.length) {
+            showGuideStep(currentGuideStep);
+        } else {
+            endGuide();
+        }
+    };
+    
+    window.skipGuide = function() {
+        // Restore PDF button state if skipping from step 6
+        if (currentGuideStep === 5) {
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            if (downloadPdfBtn && downloadPdfBtn.dataset.tutorialVisible === 'true') {
+                delete downloadPdfBtn.dataset.tutorialVisible;
+                // Hide if there are no sprinklers
+                if (sprinklers.length === 0) {
+                    downloadPdfBtn.classList.remove('visible');
+                }
+            }
+        }
+        endGuide();
+    };
+    
+    function endGuide() {
+        // Restore PDF button state if ending from step 6
+        if (currentGuideStep === 5) {
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            if (downloadPdfBtn && downloadPdfBtn.dataset.tutorialVisible === 'true') {
+                delete downloadPdfBtn.dataset.tutorialVisible;
+                // Hide if there are no sprinklers
+                if (sprinklers.length === 0) {
+                    downloadPdfBtn.classList.remove('visible');
+                }
+            }
+        }
+        
+        guideActive = false;
+        guideOverlay.classList.remove('active');
+        document.querySelectorAll('.guide-highlight, .guide-tooltip').forEach(el => el.remove());
+    }
+    
+    // Start guide after a short delay
+    setTimeout(() => {
+        if (!isLawnValid && sprinklers.length === 0) {
+            startGuide();
+        }
+    }, 1000);
+
+</script>
+</body>
+</html>
