@@ -1,0 +1,162 @@
+<svg viewBox="0 0 560 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Professional PDF schematic export showing sprinkler head placement with dimension annotations and performance data">
+  <defs>
+    <filter id="pageShadow" x="-5%" y="-3%" width="110%" height="110%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="16" result="blur"/>
+      <feOffset dx="0" dy="8" result="offset"/>
+      <feFlood flood-color="#000" flood-opacity="0.14" result="color"/>
+      <feComposite in="color" in2="offset" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Page background -->
+  <rect width="560" height="780" fill="#f0f1f4"/>
+
+  <!-- Paper -->
+  <g filter="url(#pageShadow)">
+    <rect x="24" y="16" width="512" height="748" rx="2" fill="#ffffff"/>
+    <rect x="24" y="16" width="512" height="748" rx="2" fill="none" stroke="#d4d4d8" stroke-width="0.5"/>
+  </g>
+
+  <!-- ════ TITLE ════ -->
+  <text x="280" y="58" font-family="'Courier New', monospace" font-size="18" font-weight="700" fill="#18181b" text-anchor="middle" letter-spacing="0.12em">IRRIGATION SYSTEM SCHEMATIC</text>
+  <text x="280" y="78" font-family="'Courier New', monospace" font-size="9.5" fill="#52525b" text-anchor="middle" letter-spacing="0.06em">DATE: 04/12/2026</text>
+
+  <!-- Separator -->
+  <line x1="48" y1="92" x2="512" y2="92" stroke="#d4d4d8" stroke-width="0.8"/>
+
+  <!-- ════ DIMENSIONS ════ -->
+  <text x="56" y="116" font-family="'Courier New', monospace" font-size="10.5" font-weight="700" fill="#18181b" letter-spacing="0.05em">DIMENSIONS</text>
+  <text x="56" y="134" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">LENGTH: 10.00 m</text>
+  <text x="210" y="134" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">WIDTH: 5.00 m</text>
+  <text x="370" y="134" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">AREA: 50.00 m²</text>
+
+  <!-- ════ PLAN VIEW ════ -->
+  <text x="56" y="160" font-family="'Courier New', monospace" font-size="10.5" font-weight="700" fill="#18181b" letter-spacing="0.05em">PLAN VIEW</text>
+
+  <!-- Plan view box -->
+  <rect x="56" y="172" width="448" height="260" fill="#ffffff" stroke="#d4d4d8" stroke-width="0.5"/>
+
+  <!-- Grid lines inside plan view -->
+  <g stroke="#e5e7eb" stroke-width="0.3">
+    <line x1="101" y1="172" x2="101" y2="432"/>
+    <line x1="146" y1="172" x2="146" y2="432"/>
+    <line x1="191" y1="172" x2="191" y2="432"/>
+    <line x1="236" y1="172" x2="236" y2="432"/>
+    <line x1="281" y1="172" x2="281" y2="432"/>
+    <line x1="326" y1="172" x2="326" y2="432"/>
+    <line x1="371" y1="172" x2="371" y2="432"/>
+    <line x1="416" y1="172" x2="416" y2="432"/>
+    <line x1="461" y1="172" x2="461" y2="432"/>
+    <line x1="56" y1="224" x2="504" y2="224"/>
+    <line x1="56" y1="276" x2="504" y2="276"/>
+    <line x1="56" y1="328" x2="504" y2="328"/>
+    <line x1="56" y1="380" x2="504" y2="380"/>
+  </g>
+
+  <!-- Lawn rectangle (green fill, dark border) -->
+  <rect x="118" y="220" width="330" height="170" fill="#ecfdf5" stroke="#374151" stroke-width="1.4"/>
+
+  <!-- ════ DIMENSION LINES ════ -->
+  <!-- Top: 10.00 -->
+  <line x1="118" y1="206" x2="118" y2="214" stroke="#52525b" stroke-width="0.6"/>
+  <line x1="448" y1="206" x2="448" y2="214" stroke="#52525b" stroke-width="0.6"/>
+  <line x1="118" y1="210" x2="448" y2="210" stroke="#52525b" stroke-width="0.6"/>
+  <text x="283" y="207" font-family="'Courier New', monospace" font-size="8" fill="#52525b" text-anchor="middle">10.00</text>
+
+  <!-- Left: 5.00 -->
+  <line x1="104" y1="220" x2="112" y2="220" stroke="#52525b" stroke-width="0.6"/>
+  <line x1="104" y1="390" x2="112" y2="390" stroke="#52525b" stroke-width="0.6"/>
+  <line x1="108" y1="220" x2="108" y2="390" stroke="#52525b" stroke-width="0.6"/>
+  <text x="100" y="309" font-family="'Courier New', monospace" font-size="8" fill="#52525b" text-anchor="middle" transform="rotate(-90,100,309)">5.00</text>
+
+  <!-- ════ SPRINKLER COVERAGE CIRCLES (dashed) ════ -->
+  <circle cx="197" cy="300" r="66" fill="none" stroke="#9ca3af" stroke-width="0.7" stroke-dasharray="4,3"/>
+  <circle cx="283" cy="300" r="66" fill="none" stroke="#9ca3af" stroke-width="0.7" stroke-dasharray="4,3"/>
+  <circle cx="376" cy="298" r="66" fill="none" stroke="#9ca3af" stroke-width="0.7" stroke-dasharray="4,3"/>
+
+  <!-- ════ SPRINKLER SYMBOLS (circle + crosshair + label) ════ -->
+  <!-- Sprinkler 1 -->
+  <circle cx="197" cy="300" r="10" fill="#ffffff" stroke="#374151" stroke-width="1.2"/>
+  <line x1="191" y1="300" x2="203" y2="300" stroke="#374151" stroke-width="0.9"/>
+  <line x1="197" y1="294" x2="197" y2="306" stroke="#374151" stroke-width="0.9"/>
+  <circle cx="197" cy="230" r="9" fill="#ffffff" stroke="#374151" stroke-width="1"/>
+  <text x="197" y="234" font-family="'Courier New', monospace" font-size="9" font-weight="600" fill="#374151" text-anchor="middle">1</text>
+
+  <!-- Sprinkler 2 -->
+  <circle cx="283" cy="300" r="10" fill="#ffffff" stroke="#374151" stroke-width="1.2"/>
+  <line x1="277" y1="300" x2="289" y2="300" stroke="#374151" stroke-width="0.9"/>
+  <line x1="283" y1="294" x2="283" y2="306" stroke="#374151" stroke-width="0.9"/>
+  <circle cx="283" cy="230" r="9" fill="#ffffff" stroke="#374151" stroke-width="1"/>
+  <text x="283" y="234" font-family="'Courier New', monospace" font-size="9" font-weight="600" fill="#374151" text-anchor="middle">2</text>
+
+  <!-- Sprinkler 3 -->
+  <circle cx="376" cy="298" r="10" fill="#ffffff" stroke="#374151" stroke-width="1.2"/>
+  <line x1="370" y1="298" x2="382" y2="298" stroke="#374151" stroke-width="0.9"/>
+  <line x1="376" y1="292" x2="376" y2="304" stroke="#374151" stroke-width="0.9"/>
+  <circle cx="376" cy="230" r="9" fill="#ffffff" stroke="#374151" stroke-width="1"/>
+  <text x="376" y="234" font-family="'Courier New', monospace" font-size="9" font-weight="600" fill="#374151" text-anchor="middle">3</text>
+
+  <!-- ════ SPRINKLER SCHEDULE ════ -->
+  <text x="56" y="462" font-family="'Courier New', monospace" font-size="10.5" font-weight="700" fill="#18181b" letter-spacing="0.05em">SPRINKLER SCHEDULE</text>
+
+  <!-- Table header -->
+  <text x="60" y="484" font-family="'Courier New', monospace" font-size="8" font-weight="700" fill="#374151">ID</text>
+  <text x="100" y="484" font-family="'Courier New', monospace" font-size="8" font-weight="700" fill="#374151">TYPE</text>
+  <text x="180" y="484" font-family="'Courier New', monospace" font-size="8" font-weight="700" fill="#374151">POSITION [X,Y]</text>
+  <text x="320" y="484" font-family="'Courier New', monospace" font-size="8" font-weight="700" fill="#374151">RADIUS</text>
+  <text x="400" y="484" font-family="'Courier New', monospace" font-size="8" font-weight="700" fill="#374151">ANGLE</text>
+  <text x="465" y="484" font-family="'Courier New', monospace" font-size="8" font-weight="700" fill="#374151">ROTATION</text>
+  <line x1="56" y1="489" x2="510" y2="489" stroke="#d4d4d8" stroke-width="0.5"/>
+
+  <!-- Row 1 -->
+  <text x="60" y="504" font-family="'Courier New', monospace" font-size="8" fill="#52525b">1</text>
+  <text x="100" y="504" font-family="'Courier New', monospace" font-size="8" fill="#52525b">CIRC</text>
+  <text x="180" y="504" font-family="'Courier New', monospace" font-size="8" fill="#52525b">[2.38, 2.43]</text>
+  <text x="320" y="504" font-family="'Courier New', monospace" font-size="8" fill="#52525b">2.00 m</text>
+  <text x="400" y="504" font-family="'Courier New', monospace" font-size="8" fill="#52525b">--</text>
+  <text x="465" y="504" font-family="'Courier New', monospace" font-size="8" fill="#52525b">--</text>
+
+  <!-- Row 2 -->
+  <text x="60" y="520" font-family="'Courier New', monospace" font-size="8" fill="#52525b">2</text>
+  <text x="100" y="520" font-family="'Courier New', monospace" font-size="8" fill="#52525b">CIRC</text>
+  <text x="180" y="520" font-family="'Courier New', monospace" font-size="8" fill="#52525b">[5.01, 2.43]</text>
+  <text x="320" y="520" font-family="'Courier New', monospace" font-size="8" fill="#52525b">2.00 m</text>
+  <text x="400" y="520" font-family="'Courier New', monospace" font-size="8" fill="#52525b">--</text>
+  <text x="465" y="520" font-family="'Courier New', monospace" font-size="8" fill="#52525b">--</text>
+
+  <!-- Row 3 -->
+  <text x="60" y="536" font-family="'Courier New', monospace" font-size="8" fill="#52525b">3</text>
+  <text x="100" y="536" font-family="'Courier New', monospace" font-size="8" fill="#52525b">CIRC</text>
+  <text x="180" y="536" font-family="'Courier New', monospace" font-size="8" fill="#52525b">[7.81, 2.36]</text>
+  <text x="320" y="536" font-family="'Courier New', monospace" font-size="8" fill="#52525b">2.00 m</text>
+  <text x="400" y="536" font-family="'Courier New', monospace" font-size="8" fill="#52525b">--</text>
+  <text x="465" y="536" font-family="'Courier New', monospace" font-size="8" fill="#52525b">--</text>
+
+  <!-- Note -->
+  <text x="56" y="564" font-family="'Courier New', monospace" font-size="7" fill="#9ca3af" font-style="italic">NOTE: Position coordinates relative to lawn origin (top-left corner).</text>
+
+  <!-- ════ PERFORMANCE DATA ════ -->
+  <text x="56" y="596" font-family="'Courier New', monospace" font-size="10.5" font-weight="700" fill="#18181b" letter-spacing="0.05em">PERFORMANCE DATA</text>
+
+  <text x="60" y="618" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">COVERAGE:</text>
+  <text x="160" y="618" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">65.32%</text>
+
+  <text x="60" y="634" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">OVERLAP:</text>
+  <text x="160" y="634" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">11.02%</text>
+
+  <text x="60" y="650" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">UNCOVERED:</text>
+  <text x="160" y="650" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">34.68%</text>
+
+  <text x="60" y="666" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">EFFICIENCY:</text>
+  <text x="160" y="666" font-family="'Courier New', monospace" font-size="8.5" fill="#52525b">100.00%</text>
+
+  <!-- ════ FOOTER ════ -->
+  <line x1="48" y1="700" x2="512" y2="700" stroke="#e5e7eb" stroke-width="0.4"/>
+  <text x="56" y="716" font-family="'Courier New', monospace" font-size="7" fill="#a1a1aa">Generated by MyLawnPlanner</text>
+  <text x="504" y="716" font-family="'Courier New', monospace" font-size="7" fill="#a1a1aa" text-anchor="end">Sheet 1 of 1</text>
+
+  <!-- PDF badge -->
+  <rect x="448" y="732" width="56" height="22" rx="4" fill="#ef4444"/>
+  <text x="464" y="747" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#ffffff" letter-spacing="0.05em">PDF</text>
+</svg>

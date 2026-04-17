@@ -1,0 +1,219 @@
+<svg viewBox="0 0 1120 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MyLawnPlanner drag-and-drop sprinkler system design tool showing coverage zones on a lawn canvas">
+  <defs>
+    <!-- Window shadow -->
+    <filter id="windowShadow" x="-6%" y="-4%" width="112%" height="116%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="20" result="blur"/>
+      <feOffset dx="0" dy="12" result="offsetBlur"/>
+      <feFlood flood-color="#000" flood-opacity="0.18" result="color"/>
+      <feComposite in="color" in2="offsetBlur" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Lawn gradient -->
+    <linearGradient id="lawnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d1fae5"/>
+      <stop offset="50%" stop-color="#ecfdf5"/>
+      <stop offset="100%" stop-color="#d1fae5"/>
+    </linearGradient>
+    <!-- Lawn stroke -->
+    <linearGradient id="lawnStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <!-- Coverage glow -->
+    <radialGradient id="coverGlow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(99,102,241,0.14)"/>
+      <stop offset="70%" stop-color="rgba(99,102,241,0.06)"/>
+      <stop offset="100%" stop-color="rgba(99,102,241,0)"/>
+    </radialGradient>
+    <radialGradient id="coverGlow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(59,130,246,0.12)"/>
+      <stop offset="70%" stop-color="rgba(59,130,246,0.05)"/>
+      <stop offset="100%" stop-color="rgba(59,130,246,0)"/>
+    </radialGradient>
+    <!-- Sidebar gradient (refined) -->
+    <linearGradient id="sidebarBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fafbfc"/>
+      <stop offset="100%" stop-color="#f5f6f7"/>
+    </linearGradient>
+    <!-- Button gradient -->
+    <linearGradient id="btnGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <!-- Coverage zone ring -->
+    <filter id="coverageRing" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+    </filter>
+    <!-- Selected sprinkler glow -->
+    <filter id="selectedGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+      <feFlood flood-color="#ef4444" flood-opacity="0.4" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+      <feComposite in="shadow" in2="SourceGraphic" operator="in" result="shadow2"/>
+      <feMerge><feMergeNode in="shadow2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Button shadow -->
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
+      <feOffset dx="0" dy="1" result="offsetBlur"/>
+      <feFlood flood-color="#000" flood-opacity="0.08" result="color"/>
+      <feComposite in="color" in2="offsetBlur" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ════════ WINDOW CHROME ════════ -->
+  <rect x="40" y="50" width="1040" height="620" rx="12" fill="#ffffff" filter="url(#windowShadow)"/>
+
+  <!-- Toolbar —— Safari macOS style -->
+  <rect x="40" y="50" width="1040" height="28" rx="12 12 0 0" fill="#f9f9f9" stroke="#d5d5d5" stroke-width="0.5"/>
+  <circle cx="56" cy="64" r="4" fill="#ef4444"/>
+  <circle cx="72" cy="64" r="4" fill="#f59e0b"/>
+  <circle cx="88" cy="64" r="4" fill="#10b981"/>
+  
+  <!-- Address bar background (Safari macOS style) -->
+  <rect x="130" y="56" width="850" height="16" rx="8" fill="#f0f0f0" stroke="#dadada" stroke-width="0.5" opacity="0.95"/>
+  <text x="145" y="65" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#666" letter-spacing="0.01em">mylawnplanner.netlify.app</text>
+
+  <!-- Sidebar button group -->
+  <g>
+    <!-- Circular Sprinkler -->
+    <rect x="58" y="88" width="120" height="28" rx="6" fill="#ffffff" stroke="#d9d9e3" stroke-width="0.5" opacity="0.9"/>
+    <circle cx="76" cy="102" r="5" fill="none" stroke="#6366f1" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="76" cy="102" r="1.5" fill="#6366f1"/>
+
+    <!-- Impact Sprinkler -->
+    <rect x="186" y="88" width="108" height="28" rx="6" fill="#ffffff" stroke="#d9d9e3" stroke-width="0.5" opacity="0.9"/>
+    <path d="M204,102 L204,96 A6,6 0 0,1 210,102 Z" fill="none" stroke="#6366f1" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="204" cy="102" r="1.5" fill="#6366f1"/>
+
+    <!-- Export PDF - primary (refined) -->
+    <rect x="440" y="88" width="110" height="28" rx="6" fill="url(#btnGrad)" opacity="0.95" filter="url(#btnShadow)"/>
+    <text x="460" y="106" font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="600" fill="#ffffff">Export PDF</text>
+  </g>
+
+  <!-- ════════ CANVAS AREA ════════ -->
+  <rect x="48" y="130" width="730" height="540" rx="2" fill="#f4f5f7"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#e8e8ec" stroke-width="0.3" opacity="0.7">
+    <line x1="48" y1="235" x2="778" y2="235"/>
+    <line x1="48" y1="340" x2="778" y2="340"/>
+    <line x1="48" y1="445" x2="778" y2="445"/>
+    <line x1="48" y1="550" x2="778" y2="550"/>
+    <line x1="195" y1="130" x2="195" y2="670"/>
+    <line x1="340" y1="130" x2="340" y2="670"/>
+    <line x1="485" y1="130" x2="485" y2="670"/>
+    <line x1="630" y1="130" x2="630" y2="670"/>
+  </g>
+
+  <!-- ════════ LAWN ════════ -->
+  <rect x="100" y="167" width="630" height="468" rx="4"
+        fill="url(#lawnGrad)" stroke="url(#lawnStroke)" stroke-width="2.5"/>
+
+  <!-- Fine lawn texture lines -->
+  <g stroke="#bbf7d0" stroke-width="0.3" opacity="0.5">
+    <line x1="100" y1="280" x2="730" y2="280"/>
+    <line x1="100" y1="393" x2="730" y2="393"/>
+    <line x1="100" y1="506" x2="730" y2="506"/>
+  </g>
+
+  <!-- ════════ COVERAGE ZONES ════════ -->
+  <!-- Zone 1 — top left -->
+  <circle cx="220" cy="290" r="120" fill="url(#coverGlow1)"/>
+  <circle cx="220" cy="290" r="120" fill="none" stroke="#a5b4fc" stroke-width="1" opacity="0.7"/>
+
+  <!-- Zone 2 — top center -->
+  <circle cx="415" cy="290" r="120" fill="url(#coverGlow1)"/>
+  <circle cx="415" cy="290" r="120" fill="none" stroke="#a5b4fc" stroke-width="1" opacity="0.7"/>
+
+  <!-- Zone 3 — top right -->
+  <circle cx="610" cy="290" r="120" fill="url(#coverGlow1)"/>
+  <circle cx="610" cy="290" r="120" fill="none" stroke="#a5b4fc" stroke-width="1" opacity="0.7"/>
+
+  <!-- Zone 4 — bottom left -->
+  <circle cx="220" cy="500" r="120" fill="url(#coverGlow1)"/>
+  <circle cx="220" cy="500" r="120" fill="none" stroke="#a5b4fc" stroke-width="1" opacity="0.7"/>
+
+  <!-- Zone 5 — bottom center -->
+  <circle cx="415" cy="500" r="120" fill="url(#coverGlow1)"/>
+  <circle cx="415" cy="500" r="120" fill="none" stroke="#a5b4fc" stroke-width="1" opacity="0.7"/>
+
+  <!-- Zone 6 — arc sector (impact sprinkler, selected) -->
+  <path d="M610,500 L610,390 A110,110 0 0,1 690,570 Z" fill="url(#coverGlow2)" stroke="#93c5fd" stroke-width="1" opacity="0.8"/>
+
+  <!-- Overlap highlights — where zones intersect, slightly brighter fill -->
+  <circle cx="318" cy="290" r="45" fill="rgba(99,102,241,0.06)" opacity="0.8"/>
+  <circle cx="512" cy="290" r="45" fill="rgba(99,102,241,0.06)" opacity="0.8"/>
+  <circle cx="318" cy="500" r="45" fill="rgba(99,102,241,0.06)" opacity="0.8"/>
+
+  <!-- ════════ SPRINKLER DOTS ════════ -->
+  <!-- Regular sprinklers -->
+  <g>
+    <circle cx="220" cy="290" r="6" fill="#4f46e5" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="415" cy="290" r="6" fill="#4f46e5" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="610" cy="290" r="6" fill="#4f46e5" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="220" cy="500" r="6" fill="#4f46e5" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="415" cy="500" r="6" fill="#4f46e5" stroke="#ffffff" stroke-width="2"/>
+  </g>
+  <!-- Selected sprinkler (impact) with glow -->
+  <g filter="url(#selectedGlow)">
+    <circle cx="610" cy="500" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+  </g>
+
+  <!-- ════════ SIDEBAR ════════ -->
+  <rect x="786" y="110" width="286" height="560" fill="url(#sidebarBg)"/>
+  <line x1="786" y1="110" x2="786" y2="670" stroke="#e4e4e7" stroke-width="0.8"/>
+
+  <!-- Sidebar header -->
+  <rect x="786" y="110" width="286" height="46" fill="#fcfcfd"/>
+  <line x1="786" y1="156" x2="1072" y2="156" stroke="#e4e4e7" stroke-width="0.5"/>
+  <text x="806" y="138" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#18181b">Impact Sprinkler</text>
+  <rect x="1028" y="126" width="28" height="16" rx="8" fill="#fef2f2" stroke="#fecaca" stroke-width="0.5"/>
+  <circle cx="1042" cy="134" r="4" fill="#ef4444"/>
+
+  <!-- Radius control -->
+  <text x="806" y="186" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#71717a" letter-spacing="0.04em">RADIUS</text>
+  <rect x="806" y="196" width="248" height="36" rx="8" fill="#ffffff" stroke="#e4e4e7" stroke-width="1"/>
+  <text x="822" y="219" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#18181b" font-weight="500">5.0</text>
+  <rect x="1002" y="202" width="40" height="24" rx="5" fill="#f4f4f5"/>
+  <text x="1012" y="218" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#71717a" font-weight="500">m</text>
+
+  <!-- Angle control -->
+  <text x="806" y="260" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#71717a" letter-spacing="0.04em">SWEEP ANGLE</text>
+  <rect x="806" y="270" width="248" height="36" rx="8" fill="#ffffff" stroke="#e4e4e7" stroke-width="1"/>
+  <text x="822" y="293" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#18181b" font-weight="500">180</text>
+  <rect x="1002" y="276" width="40" height="24" rx="5" fill="#f4f4f5"/>
+  <text x="1017" y="292" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#71717a" font-weight="500">°</text>
+
+  <!-- Rotation control -->
+  <text x="806" y="334" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#71717a" letter-spacing="0.04em">ROTATION</text>
+  <rect x="806" y="344" width="248" height="36" rx="8" fill="#ffffff" stroke="#e4e4e7" stroke-width="1"/>
+  <text x="822" y="367" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#18181b" font-weight="500">45</text>
+  <rect x="1002" y="350" width="40" height="24" rx="5" fill="#f4f4f5"/>
+  <text x="1017" y="366" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#71717a" font-weight="500">°</text>
+
+
+
+  <!-- Divider -->
+  <line x1="806" y1="456" x2="1054" y2="456" stroke="#e4e4e7" stroke-width="0.5"/>
+
+  <!-- Coverage Analysis -->
+  <text x="806" y="484" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#18181b">Coverage Analysis</text>
+
+  <!-- Total Covered -->
+  <rect x="806" y="500" width="248" height="34" rx="8" fill="#ecfdf5"/>
+  <text x="822" y="521" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#374151" font-weight="500">Total Covered</text>
+  <text x="1038" y="521" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#059669" text-anchor="end">87.2%</text>
+
+  <!-- Overlap -->
+  <rect x="806" y="540" width="248" height="34" rx="8" fill="#fffbeb"/>
+  <text x="822" y="561" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#374151" font-weight="500">Overlap</text>
+  <text x="1038" y="561" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#b45309" text-anchor="end">23.1%</text>
+
+  <!-- Efficiency -->
+  <rect x="806" y="580" width="248" height="34" rx="8" fill="#eff6ff"/>
+  <text x="822" y="601" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#374151" font-weight="500">Efficiency</text>
+  <text x="1038" y="601" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="700" fill="#1d4ed8" text-anchor="end">91.4%</text>
+
+</svg>

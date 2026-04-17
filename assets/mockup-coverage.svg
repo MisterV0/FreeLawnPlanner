@@ -1,0 +1,133 @@
+<svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Detailed sprinkler coverage map showing overlapping irrigation zones with real-time coverage analysis">
+  <defs>
+    <!-- Panel shadow -->
+    <filter id="panelShadow" x="-4%" y="-3%" width="108%" height="110%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="14" result="blur"/>
+      <feOffset dx="0" dy="8" result="offset"/>
+      <feFlood flood-color="#000" flood-opacity="0.1" result="color"/>
+      <feComposite in="color" in2="offset" operator="in" result="shadow"/>
+      <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Lawn gradient (rich green) -->
+    <linearGradient id="lawnFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bbf7d0"/>
+      <stop offset="40%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <!-- Coverage radial glow -->
+    <radialGradient id="zoneGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.18"/>
+      <stop offset="60%" stop-color="#818cf8" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="zoneGlow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#60a5fa" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Overlap highlight -->
+    <radialGradient id="overlapGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c4b5fd" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#c4b5fd" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Ring glow -->
+    <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5"/>
+    </filter>
+    <!-- Clip lawn coverage to rectangle -->
+    <clipPath id="lawnClip">
+      <rect x="65" y="60" width="670" height="390" rx="4"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="520" rx="12" fill="#f8f9fb"/>
+
+  <!-- Canvas area -->
+  <rect x="16" y="16" width="768" height="488" rx="8" fill="#f0f1f4"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#e2e4e8" stroke-width="0.25" opacity="0.6">
+    <line x1="16" y1="116" x2="784" y2="116"/>
+    <line x1="16" y1="216" x2="784" y2="216"/>
+    <line x1="16" y1="316" x2="784" y2="316"/>
+    <line x1="16" y1="416" x2="784" y2="416"/>
+    <line x1="170" y1="16" x2="170" y2="504"/>
+    <line x1="324" y1="16" x2="324" y2="504"/>
+    <line x1="478" y1="16" x2="478" y2="504"/>
+    <line x1="632" y1="16" x2="632" y2="504"/>
+  </g>
+
+  <!-- Lawn shape — clean rectangle -->
+  <rect x="65" y="60" width="670" height="390" rx="4"
+        fill="url(#lawnFill)" stroke="#6ee7b7" stroke-width="2"/>
+
+  <!-- Lawn texture hatching -->
+  <g stroke="#a7f3d0" stroke-width="0.4" opacity="0.3" clip-path="url(#lawnClip)">
+    <line x1="65" y1="155" x2="735" y2="155"/>
+    <line x1="65" y1="255" x2="735" y2="255"/>
+    <line x1="65" y1="355" x2="735" y2="355"/>
+  </g>
+
+  <!-- ════ COVERAGE ZONES ════ -->
+  <!-- 6 sprinklers in a clean 2×3 symmetric grid -->
+  <!-- Row 1: y=175 — x = 185, 400, 615 -->
+  <circle cx="185" cy="175" r="115" fill="url(#zoneGlow)"/>
+  <circle cx="185" cy="175" r="115" fill="none" stroke="#a5b4fc" stroke-width="0.9" filter="url(#ringGlow)"/>
+
+  <circle cx="400" cy="175" r="115" fill="url(#zoneGlow)"/>
+  <circle cx="400" cy="175" r="115" fill="none" stroke="#a5b4fc" stroke-width="0.9" filter="url(#ringGlow)"/>
+
+  <circle cx="615" cy="175" r="115" fill="url(#zoneGlow2)"/>
+  <circle cx="615" cy="175" r="115" fill="none" stroke="#93c5fd" stroke-width="0.9" filter="url(#ringGlow)"/>
+
+  <!-- Row 2: y=340 — x = 185, 400, 615 -->
+  <circle cx="185" cy="340" r="115" fill="url(#zoneGlow)"/>
+  <circle cx="185" cy="340" r="115" fill="none" stroke="#a5b4fc" stroke-width="0.9" filter="url(#ringGlow)"/>
+
+  <circle cx="400" cy="340" r="115" fill="url(#zoneGlow)"/>
+  <circle cx="400" cy="340" r="115" fill="none" stroke="#a5b4fc" stroke-width="0.9" filter="url(#ringGlow)"/>
+
+  <circle cx="615" cy="340" r="115" fill="url(#zoneGlow2)"/>
+  <circle cx="615" cy="340" r="115" fill="none" stroke="#93c5fd" stroke-width="0.9" filter="url(#ringGlow)"/>
+
+  <!-- Overlap highlights between adjacent zones -->
+  <circle cx="293" cy="175" r="55" fill="url(#overlapGlow)"/>
+  <circle cx="508" cy="175" r="55" fill="url(#overlapGlow)"/>
+  <circle cx="293" cy="340" r="55" fill="url(#overlapGlow)"/>
+  <circle cx="508" cy="340" r="55" fill="url(#overlapGlow)"/>
+  <circle cx="185" cy="258" r="50" fill="url(#overlapGlow)"/>
+  <circle cx="400" cy="258" r="50" fill="url(#overlapGlow)"/>
+  <circle cx="615" cy="258" r="50" fill="url(#overlapGlow)"/>
+
+  <!-- ════ SPRINKLER DOTS ════ -->
+  <g>
+    <!-- Row 1 -->
+    <circle cx="185" cy="175" r="5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>
+    <circle cx="400" cy="175" r="5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>
+    <circle cx="615" cy="175" r="5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>
+    <!-- Row 2 -->
+    <circle cx="185" cy="340" r="5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>
+    <circle cx="400" cy="340" r="5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>
+    <circle cx="615" cy="340" r="5" fill="#4f46e5" stroke="#fff" stroke-width="2"/>
+  </g>
+
+  <!-- ════ FLOATING STAT BADGES ════ -->
+  <!-- Coverage badge -->
+  <g filter="url(#panelShadow)">
+    <rect x="570" y="460" width="190" height="44" rx="10" fill="#ffffff" stroke="#e5e7eb" stroke-width="0.5"/>
+    <circle cx="594" cy="482" r="11" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1"/>
+    <text x="591" y="486" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#059669">✓</text>
+    <text x="613" y="476" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6b7280" font-weight="500">Total Covered</text>
+    <text x="613" y="493" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="800" fill="#059669">87.2%</text>
+  </g>
+
+  <!-- Overlap badge -->
+  <g filter="url(#panelShadow)">
+    <rect x="34" y="460" width="175" height="44" rx="10" fill="#ffffff" stroke="#e5e7eb" stroke-width="0.5"/>
+    <circle cx="56" cy="482" r="10" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/>
+    <text x="52" y="486" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#d97706">!</text>
+    <text x="74" y="476" font-family="Inter, system-ui, sans-serif" font-size="9.5" fill="#6b7280" font-weight="500">Overlap</text>
+    <text x="74" y="493" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#b45309">23.1%</text>
+  </g>
+</svg>

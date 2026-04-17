@@ -1,0 +1,60 @@
+{
+  "name": "Lawn Sprinkler Planner",
+  "short_name": "Lawn Planner",
+  "description": "Design your perfect irrigation system - drag-and-drop sprinklers, visualize coverage zones, and generate professional PDF schematics",
+  "start_url": "/planner/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0071e3",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/assets/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/favicon.ico",
+      "sizes": "512x512",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Create New Plan",
+      "short_name": "New Plan",
+      "description": "Start designing a new lawn irrigation system",
+      "url": "/planner/app.html",
+      "icons": [
+        {
+          "src": "/assets/favicon.ico",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
