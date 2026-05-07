@@ -1,0 +1,13 @@
+# robots.txt for MyLawnPlanner
+# Allow all search engines to crawl and index the site
+
+User-agent: *
+Allow: /
+
+# Specify the sitemap
+Sitemap: https://mylawnplanner.netlify.app/sitemap.xml
+
+# Additional directives for optimization
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.gitignore
