@@ -1,0 +1,4 @@
+save layout as an image
+add obstacles as a no zone
+add new shape
+optional - add plumbing

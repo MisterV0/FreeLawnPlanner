@@ -73,27 +73,27 @@
     {
       "@type": "Question",
       "name": "Is it really free? Do I need an account?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes, it's 100% free with no account required. Everything runs in your browser with no data stored on servers." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, it's 100% free — no account, no trial, no premium tier. Everything runs in your browser. Nothing is stored on a server. We built it because we needed it ourselves." }
     },
     {
       "@type": "Question",
       "name": "What types of sprinkler systems can I design?",
-      "acceptedAnswer": { "@type": "Answer", "text": "The tool supports three sprinkler types: circular (360° spray), impact/sector (adjustable arc), and oscillating (rectangular coverage patterns)." }
+      "acceptedAnswer": { "@type": "Answer", "text": "The tool supports three sprinkler types: circular (full 360° spray), impact/sector (adjustable arc and radius), and oscillating (rectangular coverage pattern). Set the parameters for each type and see coverage in real time." }
     },
     {
       "@type": "Question",
       "name": "How does coverage calculation work?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Monte Carlo statistical sampling tests thousands of random points across your lawn to calculate exact coverage percentages." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Monte Carlo sampling. Thousands of random points tested across your lawn to determine exact coverage percentage." }
     },
     {
       "@type": "Question",
-      "name": "Can I export my irrigation design?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes, one click generates a professional PDF with sprinkler head placement, spray radius annotations, and title block." }
+      "name": "Can I export my design?",
+      "acceptedAnswer": { "@type": "Answer", "text": "One click. Professional PDF with head placement, spray radii, and title block." }
     },
     {
       "@type": "Question",
       "name": "Does it work on mobile?",
-      "acceptedAnswer": { "@type": "Answer", "text": "It works on any modern browser, but desktop or tablet is recommended for the best drag-and-drop experience." }
+      "acceptedAnswer": { "@type": "Answer", "text": "It runs in any modern browser, including mobile. However, for the best experience we strongly recommend using a desktop or tablet — the drag-and-drop interface and canvas precision work much better on larger screens." }
     }
   ]
 }
@@ -235,7 +235,7 @@ img, svg { max-width: 100%; height: auto; display: block; }
   overflow: visible;
 }
 .hero-content {
-  max-width: 720px; margin: 0 auto;
+  max-width: 900px; margin: 0 auto;
   padding: 0 22px;
 }
 .hero-eyebrow {
@@ -245,11 +245,11 @@ img, svg { max-width: 100%; height: auto; display: block; }
   margin-bottom: 0.75rem;
 }
 .hero h1 {
-  font-size: clamp(2.75rem, 7vw, 5rem);
+  font-size: clamp(2.25rem, 5.5vw, 4.25rem);
   font-weight: 700;
   color: var(--black);
-  line-height: 1.05;
-  letter-spacing: -0.045em;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
   margin-bottom: 1.25rem;
 }
 .hero-sub {
@@ -479,6 +479,31 @@ img, svg { max-width: 100%; height: auto; display: block; }
   background: var(--black);
   position: relative; overflow: hidden;
 }
+.final-cta::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 1000px; height: 1000px;
+  background: radial-gradient(circle, rgba(0,113,227,0.28) 0%, transparent 65%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.final-cta::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 600px 400px at 50% 50%, #000 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse 600px 400px at 50% 50%, #000 0%, transparent 75%);
+  pointer-events: none;
+}
+.final-cta .wrap { position: relative; z-index: 1; }
+.final-cta-eyebrow {
+  display: inline-block;
+  font-size: 0.9375rem; font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.01em;
+  margin-bottom: 1rem;
+}
 .final-cta h2 {
   font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 700;
   color: var(--white); letter-spacing: -0.035em;
@@ -494,8 +519,13 @@ img, svg { max-width: 100%; height: auto; display: block; }
   background: rgba(255,255,255,0.95); color: var(--black);
   font-weight: 500; font-size: 1.0625rem;
   padding: 0.875rem 2rem;
+  box-shadow: 0 8px 30px rgba(0,113,227,0.35);
 }
-.final-cta .btn-primary:hover { background: #fff; color: var(--black); }
+.final-cta .btn-primary:hover {
+  background: #fff; color: var(--black);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 36px rgba(0,113,227,0.45);
+}
 /* ---- MODALS ---- */
 .modal-overlay {
   display: none; position: fixed; inset: 0; z-index: 5000;
@@ -521,6 +551,47 @@ img, svg { max-width: 100%; height: auto; display: block; }
   font-size: 1.5rem; font-weight: 700; color: var(--black);
   margin-bottom: 1rem; letter-spacing: -0.02em;
 }
+.changelog-entry { padding: 1rem 0; border-bottom: 1px solid var(--gray-100); }
+.changelog-entry:first-child { padding-top: 0; }
+.changelog-entry:last-child { border-bottom: none; padding-bottom: 0; }
+.changelog-version {
+  display: inline-block;
+  background: var(--gray-50); color: var(--blue);
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.01em;
+  padding: 0.2rem 0.6rem; border-radius: 980px;
+  margin-bottom: 0.75rem;
+}
+.changelog-entry ul { list-style: none; }
+.changelog-entry li {
+  position: relative; padding-left: 1rem;
+  color: var(--gray-500); font-size: 0.9375rem; line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+.changelog-entry li:last-child { margin-bottom: 0; }
+.changelog-entry li::before { content: '•'; position: absolute; left: 0; color: var(--blue); }
+.modal-app-list { list-style: none; }
+.modal-app-list li + li { margin-top: 0.5rem; }
+.modal-app-list a {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.875rem 1.125rem; border-radius: 14px;
+  background: var(--gray-50); color: var(--black);
+  transition: background 0.3s var(--ease-apple);
+}
+.modal-app-list a:hover { background: var(--gray-100); }
+.modal-app-info { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; min-width: 0; }
+.modal-app-name { font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.01em; }
+.modal-app-desc { font-size: 0.8125rem; color: var(--gray-400); line-height: 1.4; font-weight: 400; }
+.modal-app-arrow { color: var(--gray-400); font-size: 1.1rem; flex-shrink: 0; }
+.modal-contact-list { list-style: none; }
+.modal-contact-list li + li { margin-top: 0.5rem; }
+.modal-contact-list li {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.875rem 1.125rem; border-radius: 14px;
+  background: var(--gray-50); font-size: 0.9375rem;
+}
+.modal-contact-list a { color: var(--blue); font-weight: 500; }
+.modal-contact-list a:hover { opacity: 0.72; }
+.modal-contact-list .contact-label { color: var(--gray-400); font-weight: 500; min-width: 72px; }
 
 /* ---- FOOTER ---- */
 .footer {
@@ -588,10 +659,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 <section class="hero" aria-label="Hero">
   <div class="hero-content fade-in">
     <div class="hero-eyebrow">Free Irrigation Design Tool • No Sign-up Required • Online Only</div>
-    <h1>Design Professional Sprinkler System Layouts & Irrigation Plans for Any Lawn</h1>
+    <h1>Design a Sprinkler System That Covers Every Inch of Your Lawn</h1>
     <p class="hero-sub">Create professional irrigation plans for any lawn shape. Visualize sprinkler coverage zones in real time. Export contractor-ready PDFs instantly—completely free, no software or accounts needed.</p>
     <div class="hero-actions">
-      <a href="/planner/app.html" class="btn-primary">Start designing <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8h9"/><path d="M8.5 4l4 4-4 4"/></svg></a>
+      <a href="/planner/app.html" class="btn-primary">Start designing free <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8h9"/><path d="M8.5 4l4 4-4 4"/></svg></a>
       <a href="#how-it-works" class="btn-ghost">How it works</a>
     </div>
   </div>
@@ -621,7 +692,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
     </span>
     <span class="trust-item">
       <svg viewBox="0 0 16 16" fill="none"><path d="M13.25 4.75L6 12 2.75 8.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Works offline
+      Runs instantly in your browser
     </span>
   </div>
 </div>
@@ -632,7 +703,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
     <div class="showcase-row fade-in">
       <div class="showcase-text">
         <div class="showcase-eyebrow">Real-Time Coverage Visualization</div>
-        <h2 id="sh1-heading">Calculate Exact Sprinkler System Coverage Zones & Irrigation Overlap Patterns</h2>
+        <h2 id="sh1-heading">Watch Your Coverage Come to Life, in Real Time</h2>
         <p>Place a sprinkler head and watch the coverage arc render instantly. See overlapping zones, identify dead spots, and eliminate wasted spray patterns in real time—before you install anything.</p>
         <a href="/planner/app.html" class="link-arrow">Try the coverage view <span aria-hidden="true">&rsaquo;</span></a>
       </div>
@@ -649,7 +720,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
     <div class="showcase-row reverse fade-in">
       <div class="showcase-text">
         <div class="showcase-eyebrow">Professional PDF Export in One Click</div>
-        <h2 id="sh2-heading">Export Professional Sprinkler System Design Schematics for Irrigation Installation</h2>
+        <h2 id="sh2-heading">Hand Your Contractor a Blueprint, Not a Sketch</h2>
         <p>Generate professional engineering-style PDFs with labeled sprinkler heads, radius annotations, efficiency metrics, performance data, and title block. Get the documentation landscape architects charge $200+ to produce.</p>
         <a href="/planner/app.html" class="link-arrow">Try the export <span aria-hidden="true">&rsaquo;</span></a>
       </div>
@@ -664,7 +735,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 <section class="section" aria-labelledby="features-heading">
   <div class="wrap">
     <div class="section-header fade-in">
-      <h2 id="features-heading">Professional Sprinkler System Design & Irrigation Layout Features</h2>
+      <h2 id="features-heading">Everything You Need to Get It Right the First Time</h2>
     </div>
     <div class="features-grid stagger">
 
@@ -786,9 +857,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 <!-- FINAL CTA -->
 <section class="final-cta" aria-label="Call to action">
   <div class="wrap fade-in">
-    <h2>Design Your Professional Sprinkler System Today</h2>
-    <p>Stop guessing. Create a coverage-verified, contractor-ready irrigation design—completely free, no sign-up required.</p>
-    <a href="/planner/app.html" class="btn-primary">Start planning</a>
+    <div class="final-cta-eyebrow">Ready When You Are</div>
+    <h2>Your Lawn Deserves Better Than Guesswork</h2>
+    <p>Design a coverage-verified irrigation plan and walk away with a contractor-ready PDF — completely free, no sign-up required.</p>
+    <a href="/planner/app.html" class="btn-primary">Build your irrigation plan</a>
   </div>
 </section>
 
@@ -797,10 +869,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-credit">© 2026 MyLawn Planner. Created by <a href="https://valerio.design" target="_blank" rel="noopener noreferrer">Valerio Independent Studio</a></div>
+    <div class="footer-credit">© 2026 MyLawn Planner. Created by <a href="https://levario.netlify.app" target="_blank" rel="noopener noreferrer">Levario Independent Studio</a></div>
     <div class="footer-links">
+      <a href="#" id="whats-new-link">What's New</a>
+      <a href="#" id="apps-link">More by us</a>
+      <a href="#" id="contact-link">Contact</a>
       <a href="#" id="privacy-link">Privacy</a>
-      <a href="#" id="about-link">About</a>
     </div>
   </div>
 </footer>
@@ -814,12 +888,80 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   </div>
 </div>
 
-<!-- About Modal -->
-<div class="modal-overlay" id="about-modal" aria-hidden="true" role="dialog" aria-labelledby="about-modal-title">
+<!-- What's New Modal -->
+<div class="modal-overlay" id="whats-new-modal" aria-hidden="true" role="dialog" aria-labelledby="whats-new-modal-title">
   <div class="modal-box">
     <button class="modal-close" aria-label="Close">&times;</button>
-    <h2 id="about-modal-title">About</h2>
-    <p style="color:var(--gray-400);font-size:0.9375rem;">Content coming soon.</p>
+    <h2 id="whats-new-modal-title">What's New</h2>
+    <div class="modal-changelog">
+      <div class="changelog-entry">
+        <div class="changelog-version">v1.5</div>
+        <ul>
+          <li>Live sprinkler counter — see exactly how many heads you've placed right in the sidebar.</li>
+          <li>US units support — switch between metric and feet.</li>
+          <li>Smoother in-app notifications — no more browser pop-ups for alerts or confirmations.</li>
+          <li>New footer: reach us directly, browse our other free tools, or catch up on updates.</li>
+          <li>The lawn view now fills more of the canvas, so your design is easier to see and work with.</li>
+        </ul>
+      </div>
+  </div>
+</div>
+
+<!-- Other Apps Modal -->
+<div class="modal-overlay" id="apps-modal" aria-hidden="true" role="dialog" aria-labelledby="apps-modal-title">
+  <div class="modal-box">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2 id="apps-modal-title">More by us</h2>
+    <ul class="modal-app-list">
+      <li>
+        <a href="https://sartorcv.com" target="_blank" rel="noopener noreferrer">
+          <span class="modal-app-info">
+            <span class="modal-app-name">SartorCV</span>
+            <span class="modal-app-desc">Build a standout resume in minutes, in 5 languages — completely free.</span>
+          </span>
+          <span class="modal-app-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://pockeng.com" target="_blank" rel="noopener noreferrer">
+          <span class="modal-app-info">
+            <span class="modal-app-name">PockEng</span>
+            <span class="modal-app-desc">A toolkit of 20+ engineering calculators, from Ohm's law to gear ratios.</span>
+          </span>
+          <span class="modal-app-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://qrexpress.org" target="_blank" rel="noopener noreferrer">
+          <span class="modal-app-info">
+            <span class="modal-app-name">QRexpress</span>
+            <span class="modal-app-desc">Generate custom QR codes instantly across 11 formats, fully personalized.</span>
+          </span>
+          <span class="modal-app-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://myreadingtracker.netlify.app" target="_blank" rel="noopener noreferrer">
+          <span class="modal-app-info">
+            <span class="modal-app-name">MyReadingTracker</span>
+            <span class="modal-app-desc">Track every book you read — no account, no cost, ever.</span>
+          </span>
+          <span class="modal-app-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal-overlay" id="contact-modal" aria-hidden="true" role="dialog" aria-labelledby="contact-modal-title">
+  <div class="modal-box">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2 id="contact-modal-title">Contact</h2>
+    <ul class="modal-contact-list">
+      <li><span class="contact-label">Facebook</span><a href="https://www.facebook.com/people/Carpathian-Beaver/61586712606133/" target="_blank" rel="noopener noreferrer">MyLawnPlanner on Facebook</a></li>
+      <li><span class="contact-label">Email</span><a href="mailto:contact.carpathianbeaver@protonmail.com">contact.carpathianbeaver@protonmail.com</a></li>
+    </ul>
   </div>
 </div>
 
@@ -847,7 +989,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
     if (m) { m.classList.remove('open'); m.setAttribute('aria-hidden','true'); }
   }
   document.getElementById('privacy-link').addEventListener('click', function(e){ e.preventDefault(); openModal('privacy-modal'); });
-  document.getElementById('about-link').addEventListener('click', function(e){ e.preventDefault(); openModal('about-modal'); });
+  document.getElementById('whats-new-link').addEventListener('click', function(e){ e.preventDefault(); openModal('whats-new-modal'); });
+  document.getElementById('apps-link').addEventListener('click', function(e){ e.preventDefault(); openModal('apps-modal'); });
+  document.getElementById('contact-link').addEventListener('click', function(e){ e.preventDefault(); openModal('contact-modal'); });
   document.querySelectorAll('.modal-close').forEach(function(btn){
     btn.addEventListener('click', function(){ closeModal(btn.closest('.modal-overlay').id); });
   });

@@ -137,6 +137,13 @@ html {
         --action-tooltip-text: var(--light-color);
     }
 
+    /* Kept in the DOM for SEO/accessibility (matches <title>) but not shown visually */
+    .visually-hidden {
+        position: absolute; width: 1px; height: 1px;
+        padding: 0; margin: -1px; overflow: hidden;
+        clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+
     .simulator-container {
         display: flex;
         width: 100%;
@@ -627,6 +634,7 @@ html {
          font-size: 0.9rem;
          box-shadow: var(--box-shadow);
     }
+    #sprinkler-count { background-color: rgba(79, 70, 229, 0.12); color: var(--primary-color-dark); }
     #coverage-percentage { background-color: rgba(16, 185, 129, 0.15); color: #047857; }
     #overlap-percentage { background-color: rgba(245, 158, 11, 0.15); color: #b45309; }
     #uncovered-percentage { background-color: rgba(107, 114, 128, 0.15); color: #4b5563; }
@@ -794,6 +802,81 @@ html {
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
     }
+
+    /* ---- Toast Notifications ---- */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 6000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+    }
+    .toast {
+        background: var(--dark-color);
+        color: white;
+        padding: 12px 18px;
+        border-radius: var(--border-radius-sm);
+        box-shadow: var(--box-shadow-xl);
+        font-size: 0.875rem;
+        font-weight: 500;
+        max-width: 320px;
+        opacity: 0;
+        transform: translateX(24px);
+        transition: opacity var(--transition-speed-slow) var(--transition-easing), transform var(--transition-speed-slow) var(--transition-easing);
+        pointer-events: auto;
+        border-left: 3px solid var(--warning-color);
+    }
+    .toast.visible { opacity: 1; transform: translateX(0); }
+
+    /* ---- Confirm Modal ---- */
+    .app-modal-overlay {
+        display: none;
+        position: fixed; inset: 0; z-index: 6000;
+        background: rgba(31, 41, 55, 0.5);
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        justify-content: center; align-items: center;
+    }
+    .app-modal-overlay.open { display: flex; }
+    .app-modal-box {
+        background: var(--light-color);
+        border-radius: var(--border-radius);
+        padding: 1.75rem;
+        max-width: 380px;
+        width: calc(100% - 2rem);
+        box-shadow: var(--box-shadow-xl);
+        border: 1px solid var(--border-color);
+        position: relative;
+        animation: slideUp 0.3s var(--transition-easing);
+    }
+    .app-modal-close {
+        position: absolute; top: 0.85rem; right: 0.85rem;
+        background: none; border: none; font-size: 1.25rem;
+        color: var(--secondary-color); cursor: pointer; line-height: 1;
+        transition: color var(--transition-speed) var(--transition-easing);
+    }
+    .app-modal-close:hover { color: var(--dark-color); }
+    .app-modal-box h3 {
+        color: var(--dark-color);
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+        padding-right: 1rem;
+    }
+    .app-modal-box p {
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+    .app-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    .app-modal-actions .btn { width: auto; margin-top: 0; padding: 10px 18px; }
 
     /* Shape Selector — Apple-style segmented control */
     .shape-selector {
@@ -997,7 +1080,7 @@ html {
 <div class="simulator-container">
 
     <div class="main-content">
-        <h1 style="position: absolute; top: 1rem; left: 1rem; font-size: 1.5rem; font-weight: 700; color: var(--dark-color);">Lawn Sprinklers Design Tool</h1>
+        <h1 class="visually-hidden">Sprinkler System Design Tool</h1>
         <div class="card define-lawn-card" id="define-lawn-card">
              <div class="card-header" id="define-lawn-header">
                  <h2>1. Define Lawn Area</h2>
@@ -1006,11 +1089,15 @@ html {
                  </button>
              </div>
              <div class="card-content" id="define-lawn-content">
-                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
                      <div class="shape-selector">
                          <button id="shape-rect" class="shape-btn active" data-shape="rectangle">Rectangle</button>
                          <button id="shape-circle" class="shape-btn" data-shape="circle">Circle</button>
                          <button id="shape-lshape" class="shape-btn" data-shape="lshape">L-Shape</button>
+                     </div>
+                     <div class="shape-selector">
+                         <button id="unit-metric" class="shape-btn unit-btn active" data-unit="m">Metric</button>
+                         <button id="unit-us" class="shape-btn unit-btn" data-unit="ft">US (ft)</button>
                      </div>
                  </div>
                  <div style="display: flex; gap: 10px; align-items: flex-end; max-width: 420px;">
@@ -1139,6 +1226,7 @@ html {
 
         <section class="results-area">
             <h3>4. Coverage Analysis</h3>
+            <p>Sprinklers Placed: <span id="sprinkler-count">0</span></p>
             <p>Total Covered: <span id="coverage-percentage">0.00%</span></p>
             <p>Overlap (≥2): <span id="overlap-percentage">0.00%</span></p>
             <p>Uncovered: <span id="uncovered-percentage">100.00%</span></p>
@@ -1180,6 +1268,22 @@ html {
 <!-- Interactive Guide Overlay -->
 <div id="guide-overlay" class="guide-overlay"></div>
 
+<!-- Toast Notifications -->
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<!-- Confirm Modal -->
+<div class="app-modal-overlay" id="confirm-modal-overlay" aria-hidden="true" role="dialog" aria-labelledby="confirm-modal-title">
+    <div class="app-modal-box">
+        <button class="app-modal-close" id="confirm-modal-close" aria-label="Close">&times;</button>
+        <h3 id="confirm-modal-title">Clear All Sprinklers?</h3>
+        <p id="confirm-modal-message">This will remove all placed sprinklers from your lawn. This action cannot be undone.</p>
+        <div class="app-modal-actions">
+            <button class="btn btn-secondary" id="confirm-modal-cancel">Cancel</button>
+            <button class="btn btn-danger" id="confirm-modal-confirm">Clear All</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // --- Existing Variables ---
     const defineLawnCard = document.getElementById('define-lawn-card');
@@ -1216,6 +1320,7 @@ html {
     const overlapPercentageSpan = document.getElementById('overlap-percentage');
     const uncoveredPercentageSpan = document.getElementById('uncovered-percentage');
     const efficiencyPercentageSpan = document.getElementById('efficiency-percentage');
+    const sprinklerCountSpan = document.getElementById('sprinkler-count');
 
     let lawnWidthMeters = 0, lawnHeightMeters = 0;
     let lawnShape = 'rectangle'; // 'rectangle', 'circle', or 'lshape'
@@ -1229,8 +1334,62 @@ html {
     const lshapeWidthCInput = document.getElementById('lshape-widthC');
     const lshapeHeightDInput = document.getElementById('lshape-heightD');
     let lshapeWidthA = 10, lshapeHeightB = 10, lshapeWidthC = 6, lshapeHeightD = 6;
+
+    // --- Unit System (Task 4) — all internal state/math stays in meters; ---
+    // --- this only affects what is displayed in / typed into input fields. ---
+    const M_PER_FT = 0.3048;
+    let currentUnit = 'm'; // 'm' or 'ft'
+    const unitToggleBtns = document.querySelectorAll('.unit-btn');
+    const lengthInputEls = [lawnLengthInput, lawnWidthInput, lawnDiameterInput, lshapeWidthAInput, lshapeHeightBInput, lshapeWidthCInput, lshapeHeightDInput, circularRadiusInput, impactRadiusInput, oscillatingWidthInput, oscillatingLengthInput];
+    const lengthLabelEls = [
+        { id: 'lawn-length', text: 'Length' },
+        { id: 'lawn-width', text: 'Width' },
+        { id: 'lawn-diameter', text: 'Radius' },
+        { id: 'lshape-widthA', text: 'Width A' },
+        { id: 'lshape-heightB', text: 'Height B' },
+        { id: 'lshape-widthC', text: 'Width C' },
+        { id: 'lshape-heightD', text: 'Height D' },
+        { id: 'circular-radius', text: 'Radius', colon: true },
+        { id: 'impact-radius', text: 'Radius', colon: true },
+        { id: 'oscillating-width', text: 'Coverage Width', colon: true },
+        { id: 'oscillating-length', text: 'Coverage Length', colon: true }
+    ];
+
+    function toMeters(value) { return currentUnit === 'ft' ? value * M_PER_FT : value; }
+    function fromMeters(value) { return currentUnit === 'ft' ? value / M_PER_FT : value; }
+    function unitSuffix() { return currentUnit === 'ft' ? 'ft' : 'm'; }
+    function formatLen(meters) { return `${fromMeters(meters).toFixed(2)} ${unitSuffix()}`; }
+    function unitAreaSuffix() { return currentUnit === 'ft' ? 'ft²' : 'm²'; }
+    function formatArea(sqMeters) {
+        const val = currentUnit === 'ft' ? sqMeters / (M_PER_FT * M_PER_FT) : sqMeters;
+        return `${val.toFixed(2)} ${unitAreaSuffix()}`;
+    }
+
+    function updateUnitLabels() {
+        const suffix = unitSuffix();
+        lengthLabelEls.forEach(({ id, text, colon }) => {
+            const label = document.querySelector(`label[for="${id}"]`);
+            if (label) label.textContent = `${text} (${suffix})${colon ? ':' : ''}`;
+        });
+    }
+
+    function setUnit(newUnit) {
+        if (newUnit === currentUnit) return;
+        lengthInputEls.forEach(input => {
+            const raw = parseFloat(input.value);
+            if (isNaN(raw)) return;
+            const meters = currentUnit === 'ft' ? raw * M_PER_FT : raw;
+            const displayVal = newUnit === 'ft' ? meters / M_PER_FT : meters;
+            input.value = parseFloat(displayVal.toFixed(2));
+        });
+        currentUnit = newUnit;
+        unitToggleBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-unit') === newUnit));
+        updateUnitLabels();
+        if (isLawnValid) setupLawn(false); // Recompute canvas/coverage from converted inputs
+    }
+
     let canvasWidthPx = 0, canvasHeightPx = 0, scaleFactor = 1;
-    let terrainMarginMeters = 3; // Terrain extends 3 meters beyond lawn on each side
+    let terrainMarginMeters = 1.5; // Terrain extends 1.5 meters beyond lawn on each side
     let totalCanvasWidthMeters = 0, totalCanvasHeightMeters = 0; // Including terrain
     let sprinklers = [], nextSprinklerId = 0;
     let selectedSprinklerIndex = -1, isLawnValid = false;
@@ -1283,11 +1442,57 @@ html {
          };
     }
 
+    // --- Toast / Confirm Modal (in-app replacements for alert()/confirm()) ---
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('visible'));
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            setTimeout(() => toast.remove(), 350);
+        }, 3000);
+    }
+
+    function showConfirm(message, onConfirm) {
+        const overlay = document.getElementById('confirm-modal-overlay');
+        const messageEl = document.getElementById('confirm-modal-message');
+        const confirmBtn = document.getElementById('confirm-modal-confirm');
+        const cancelBtn = document.getElementById('confirm-modal-cancel');
+        const closeBtn = document.getElementById('confirm-modal-close');
+        if (!overlay) return;
+
+        messageEl.textContent = message;
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        function cleanup() {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+            closeBtn.removeEventListener('click', handleCancel);
+            overlay.removeEventListener('click', handleOverlayClick);
+        }
+        function handleConfirm() { cleanup(); onConfirm(); }
+        function handleCancel() { cleanup(); }
+        function handleOverlayClick(e) { if (e.target === overlay) cleanup(); }
+
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+        closeBtn.addEventListener('click', handleCancel);
+        overlay.addEventListener('click', handleOverlayClick);
+    }
+
     function initializeSimulator() {
         updateCssVars();
         loadActionIcons(); // Start loading icons
         // Initialize shape dimension display states based on default active shape
         initializeShapeDisplay();
+        updateUnitLabels();
         setupLawn(false);
         addEventListeners();
         addDragDropListeners();
@@ -1304,6 +1509,9 @@ html {
     window.addEventListener('load', initializeSimulator);
 
     function addEventListeners() {
+        unitToggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => setUnit(btn.getAttribute('data-unit')));
+        });
         setLawnBtn.addEventListener('click', () => setupLawn(true));
         lawnCanvas.addEventListener('mousedown', handleCanvasMouseDown);
         lawnCanvas.addEventListener('mousemove', handleCanvasMouseMove); // Use mousemove for hover
@@ -1467,7 +1675,8 @@ html {
 
     function validateLawnInput(input) {
          const value = parseFloat(input.value);
-         const isValid = !isNaN(value) && value > 0 && value <= 1000; // Added max value
+         const meters = toMeters(value);
+         const isValid = !isNaN(value) && meters > 0 && meters <= 1000; // Bounds always checked in meters
          input.classList.toggle('invalid', !isValid);
          return isValid;
     }
@@ -1519,7 +1728,7 @@ html {
              isLawnValid = false;
              lawnCanvas.classList.remove('visible');
              canvasHint.classList.remove('hidden');
-             canvasHint.textContent = 'Enter valid lawn dimensions (1-1000m).';
+             canvasHint.textContent = `Enter valid lawn dimensions (${fromMeters(1).toFixed(currentUnit === 'ft' ? 1 : 0)}-${fromMeters(1000).toFixed(0)}${unitSuffix()}).`;
              if (ctx) ctx.clearRect(0, 0, canvasWidthPx, canvasHeightPx);
              canvasWidthPx = 0; canvasHeightPx = 0; scaleFactor = 1;
              updateCoverage(); resetParameterUI(); updateUIState(); // Use new state updater
@@ -1528,19 +1737,19 @@ html {
 
         isLawnValid = true;
         if (lawnShape === 'circle') {
-            const radius = parseFloat(lawnDiameterInput.value);
+            const radius = toMeters(parseFloat(lawnDiameterInput.value));
             lawnWidthMeters = radius * 2;
             lawnHeightMeters = radius * 2;
         } else if (lawnShape === 'lshape') {
-            lshapeWidthA = parseFloat(lshapeWidthAInput.value);
-            lshapeHeightB = parseFloat(lshapeHeightBInput.value);
-            lshapeWidthC = parseFloat(lshapeWidthCInput.value);
-            lshapeHeightD = parseFloat(lshapeHeightDInput.value);
+            lshapeWidthA = toMeters(parseFloat(lshapeWidthAInput.value));
+            lshapeHeightB = toMeters(parseFloat(lshapeHeightBInput.value));
+            lshapeWidthC = toMeters(parseFloat(lshapeWidthCInput.value));
+            lshapeHeightD = toMeters(parseFloat(lshapeHeightDInput.value));
             lawnWidthMeters = lshapeWidthA;
             lawnHeightMeters = lshapeHeightB;
         } else {
-            lawnWidthMeters = parseFloat(lawnLengthInput.value);
-            lawnHeightMeters = parseFloat(lawnWidthInput.value);
+            lawnWidthMeters = toMeters(parseFloat(lawnLengthInput.value));
+            lawnHeightMeters = toMeters(parseFloat(lawnWidthInput.value));
         }
         
         // Calculate total canvas size including terrain
@@ -1651,6 +1860,9 @@ html {
         editHint.classList.toggle('visible', isEditing);
         selectionHint.classList.toggle('visible', !isEditing && !isMovingSprinkler && sprinklers.length > 0 && isLawnValid);
 
+        // Update live sprinkler count
+        sprinklerCountSpan.textContent = sprinklers.length;
+
         // Update cursor style (handled more dynamically in mousemove now)
         updateCursor();
     }
@@ -1693,14 +1905,14 @@ html {
          if (!sprinkler) return;
 
          if (sprinkler.type === 'circular') {
-             circularRadiusInput.value = sprinkler.radius;
+             circularRadiusInput.value = fromMeters(sprinkler.radius).toFixed(2);
          } else if (sprinkler.type === 'impact') {
-             impactRadiusInput.value = sprinkler.radius;
+             impactRadiusInput.value = fromMeters(sprinkler.radius).toFixed(2);
              impactAngleInput.value = sprinkler.angle;
              impactRotationInput.value = sprinkler.rotation;
          } else if (sprinkler.type === 'oscillating') {
-             oscillatingWidthInput.value = sprinkler.coverageWidth;
-             oscillatingLengthInput.value = sprinkler.coverageLength;
+             oscillatingWidthInput.value = fromMeters(sprinkler.coverageWidth).toFixed(2);
+             oscillatingLengthInput.value = fromMeters(sprinkler.coverageLength).toFixed(2);
              oscillatingRotationInput.value = sprinkler.rotation;
          }
          // Update UI state after populating
@@ -1717,12 +1929,14 @@ html {
          let value = parseFloat(inputElement.value);
          let isValid = !isNaN(value);
          let paramName = '';
+         let isLengthParam = false;
 
          switch (inputElement.id) {
              case 'circular-radius':
              case 'impact-radius':
                  paramName = 'radius';
-                 if (value <= 0 || value > 100) isValid = false; // Added reasonable max
+                 isLengthParam = true;
+                 if (toMeters(value) <= 0 || toMeters(value) > 100) isValid = false; // Added reasonable max
                  break;
              case 'impact-angle':
                  paramName = 'angle';
@@ -1734,11 +1948,13 @@ html {
                  break;
              case 'oscillating-width':
                  paramName = 'coverageWidth';
-                 if (value <= 0 || value > 100) isValid = false;
+                 isLengthParam = true;
+                 if (toMeters(value) <= 0 || toMeters(value) > 100) isValid = false;
                  break;
              case 'oscillating-length':
                  paramName = 'coverageLength';
-                 if (value <= 0 || value > 100) isValid = false;
+                 isLengthParam = true;
+                 if (toMeters(value) <= 0 || toMeters(value) > 100) isValid = false;
                  break;
              case 'oscillating-rotation':
                  paramName = 'rotation';
@@ -1750,7 +1966,7 @@ html {
          inputElement.classList.toggle('invalid', !isValid);
 
          if (isValid && paramName) {
-             sprinkler[paramName] = value;
+             sprinkler[paramName] = isLengthParam ? toMeters(value) : value;
              drawLawnAndSprinklers(); // Redraw to reflect changes
              updateCoverage(); // Recalculate coverage
          }
@@ -1978,11 +2194,11 @@ html {
         try {
             if (type === 'circular') {
                 // Use default value from input if user hasn't changed it, else use input's value
-                const radius = parseFloat(circularRadiusInput.value) || parseFloat(circularRadiusInput.defaultValue) || 3;
+                const radius = toMeters(parseFloat(circularRadiusInput.value)) || parseFloat(circularRadiusInput.defaultValue) || 3;
                 if (radius <= 0 || radius > 100) throw new Error("Default circular radius invalid.");
                 newSprinkler.radius = radius;
             } else if (type === 'impact') {
-                const radius = parseFloat(impactRadiusInput.value) || parseFloat(impactRadiusInput.defaultValue) || 5;
+                const radius = toMeters(parseFloat(impactRadiusInput.value)) || parseFloat(impactRadiusInput.defaultValue) || 5;
                 const angle = parseFloat(impactAngleInput.value) || parseFloat(impactAngleInput.defaultValue) || 90;
                 const rotation = parseFloat(impactRotationInput.value) || parseFloat(impactRotationInput.defaultValue) || 0;
                 if (radius <= 0 || radius > 100) throw new Error("Default impact radius invalid.");
@@ -1991,8 +2207,8 @@ html {
                 newSprinkler.angle = angle;
                 newSprinkler.rotation = rotation;
             } else if (type === 'oscillating') {
-                const cw = parseFloat(oscillatingWidthInput.value) || parseFloat(oscillatingWidthInput.defaultValue) || 4;
-                const cl = parseFloat(oscillatingLengthInput.value) || parseFloat(oscillatingLengthInput.defaultValue) || 6;
+                const cw = toMeters(parseFloat(oscillatingWidthInput.value)) || parseFloat(oscillatingWidthInput.defaultValue) || 4;
+                const cl = toMeters(parseFloat(oscillatingLengthInput.value)) || parseFloat(oscillatingLengthInput.defaultValue) || 6;
                 const rotation = parseFloat(oscillatingRotationInput.value) || parseFloat(oscillatingRotationInput.defaultValue) || 0;
                 if (cw <= 0 || cw > 100) throw new Error("Oscillating width invalid.");
                 if (cl <= 0 || cl > 100) throw new Error("Oscillating length invalid.");
@@ -2012,7 +2228,7 @@ html {
             updateCursor(); // Ensure cursor is correct after adding
          } catch (error) {
              console.error(`Error adding sprinkler: ${error.message}`);
-             alert(`Could not add sprinkler: ${error.message}`); // User feedback
+             showToast(`Could not add sprinkler: ${error.message}`); // User feedback
          }
     }
 
@@ -2028,11 +2244,13 @@ html {
             updateCoverage();
             updatePdfButtonVisibility(); // Update button visibility
             updateCursor();
+            updateUIState(); // Refresh sprinkler count and other UI state
         }
     }
 
      function clearAllSprinklers() {
-        if (sprinklers.length > 0 && confirm("Are you sure you want to remove ALL sprinklers?")) {
+        if (sprinklers.length === 0) return;
+        showConfirm("Are you sure you want to remove ALL sprinklers?", () => {
             sprinklers = [];
             selectedSprinklerIndex = -1;
             deleteActionBounds = null;
@@ -2043,7 +2261,8 @@ html {
             updateCoverage();
             updatePdfButtonVisibility(); // Update button visibility
             updateCursor();
-        }
+            updateUIState(); // Refresh sprinkler count and other UI state
+        });
     }
 
     // --- DRAWING FUNCTIONS ---
@@ -2522,7 +2741,7 @@ html {
 
     function generatePDFSchematic() {
         if (!isLawnValid || sprinklers.length === 0) {
-            alert('Please set up your lawn and add at least one sprinkler before generating the PDF.');
+            showToast('Please set up your lawn and add at least one sprinkler before generating the PDF.');
             return;
         }
 
@@ -2650,22 +2869,22 @@ html {
         if (lawnShape === 'circle') {
             const radius = lawnWidthMeters / 2;
             const area = Math.PI * radius ** 2;
-            doc.text(`RADIUS: ${radius.toFixed(2)} m`, margin, yPos);
-            doc.text(`AREA: ${area.toFixed(2)} m²`, margin + 55, yPos);
+            doc.text(`RADIUS: ${formatLen(radius)}`, margin, yPos);
+            doc.text(`AREA: ${formatArea(area)}`, margin + 55, yPos);
             doc.text(`SHAPE: CIRCLE`, margin + 110, yPos);
         } else if (lawnShape === 'lshape') {
             const area = (lshapeWidthA * lshapeHeightB) - ((lshapeWidthA - lshapeWidthC) * (lshapeHeightB - lshapeHeightD));
-            doc.text(`A: ${lshapeWidthA.toFixed(2)} m`, margin, yPos);
-            doc.text(`B: ${lshapeHeightB.toFixed(2)} m`, margin + 37, yPos);
-            doc.text(`C: ${lshapeWidthC.toFixed(2)} m`, margin + 74, yPos);
+            doc.text(`A: ${formatLen(lshapeWidthA)}`, margin, yPos);
+            doc.text(`B: ${formatLen(lshapeHeightB)}`, margin + 37, yPos);
+            doc.text(`C: ${formatLen(lshapeWidthC)}`, margin + 74, yPos);
             yPos += 6;
-            doc.text(`D: ${lshapeHeightD.toFixed(2)} m`, margin, yPos);
-            doc.text(`AREA: ${area.toFixed(2)} m²`, margin + 37, yPos);
+            doc.text(`D: ${formatLen(lshapeHeightD)}`, margin, yPos);
+            doc.text(`AREA: ${formatArea(area)}`, margin + 37, yPos);
             doc.text(`SHAPE: L-SHAPE`, margin + 74, yPos);
         } else {
-            doc.text(`LENGTH: ${lawnWidthMeters.toFixed(2)} m`, margin, yPos);
-            doc.text(`WIDTH: ${lawnHeightMeters.toFixed(2)} m`, margin + 55, yPos);
-            doc.text(`AREA: ${(lawnWidthMeters * lawnHeightMeters).toFixed(2)} m²`, margin + 110, yPos);
+            doc.text(`LENGTH: ${formatLen(lawnWidthMeters)}`, margin, yPos);
+            doc.text(`WIDTH: ${formatLen(lawnHeightMeters)}`, margin + 55, yPos);
+            doc.text(`AREA: ${formatArea(lawnWidthMeters * lawnHeightMeters)}`, margin + 110, yPos);
         }
         
         // Draw Schematic
@@ -2756,7 +2975,7 @@ html {
             doc.line(lawnCX, lawnCY, lawnCX + lawnR, lawnCY);
             doc.line(lawnCX, lawnCY - 1.5, lawnCX, lawnCY + 1.5);
             doc.line(lawnCX + lawnR, lawnCY - 1.5, lawnCX + lawnR, lawnCY + 1.5);
-            doc.text(`r = ${(lawnWidthMeters / 2).toFixed(2)} m`, lawnCX + lawnR / 2, lawnCY - 3, { align: 'center' });
+            doc.text(`r = ${formatLen(lawnWidthMeters / 2)}`, lawnCX + lawnR / 2, lawnCY - 3, { align: 'center' });
         } else if (lawnShape === 'lshape') {
             // L-shape dimensions
             const C_scaled = lshapeWidthC * diagramScale;
@@ -2771,21 +2990,21 @@ html {
             doc.line(lawnStartX, lawnStartY - 3, lawnStartX + A_scaled, lawnStartY - 3);
             doc.line(lawnStartX, lawnStartY - 4, lawnStartX, lawnStartY - 2);
             doc.line(lawnStartX + A_scaled, lawnStartY - 4, lawnStartX + A_scaled, lawnStartY - 2);
-            doc.text(`A=${lshapeWidthA.toFixed(1)}m`, lawnStartX + A_scaled / 2, lawnStartY - 5, { align: 'center' });
+            doc.text(`A=${fromMeters(lshapeWidthA).toFixed(1)}${unitSuffix()}`, lawnStartX + A_scaled / 2, lawnStartY - 5, { align: 'center' });
             
             // B dimension (left)
             doc.line(lawnStartX - 3, lawnStartY, lawnStartX - 3, lawnStartY + B_scaled);
             doc.line(lawnStartX - 4, lawnStartY, lawnStartX - 2, lawnStartY);
             doc.line(lawnStartX - 4, lawnStartY + B_scaled, lawnStartX - 2, lawnStartY + B_scaled);
-            doc.text(`B=${lshapeHeightB.toFixed(1)}m`, lawnStartX - 7, lawnStartY + B_scaled / 2, { align: 'center', angle: 90 });
+            doc.text(`B=${fromMeters(lshapeHeightB).toFixed(1)}${unitSuffix()}`, lawnStartX - 7, lawnStartY + B_scaled / 2, { align: 'center', angle: 90 });
             
             // C dimension (top right)
             doc.line(lawnStartX + C_scaled, lawnStartY - 1, lawnStartX + C_scaled, lawnStartY - 2);
-            doc.text(`C=${lshapeWidthC.toFixed(1)}m`, lawnStartX + C_scaled / 2, lawnStartY + 2, { align: 'center', fontSize: 7 });
+            doc.text(`C=${fromMeters(lshapeWidthC).toFixed(1)}${unitSuffix()}`, lawnStartX + C_scaled / 2, lawnStartY + 2, { align: 'center', fontSize: 7 });
             
             // D dimension (right)
             doc.line(lawnStartX + A_scaled + 3, lawnStartY + (B_scaled - D_scaled), lawnStartX + A_scaled + 3, lawnStartY + B_scaled);
-            doc.text(`D=${lshapeHeightD.toFixed(1)}m`, lawnStartX + A_scaled + 5, lawnStartY + (B_scaled - D_scaled / 2), { angle: 90, fontSize: 7 });
+            doc.text(`D=${fromMeters(lshapeHeightD).toFixed(1)}${unitSuffix()}`, lawnStartX + A_scaled + 5, lawnStartY + (B_scaled - D_scaled / 2), { angle: 90, fontSize: 7 });
         } else {
             // Top dimension
             doc.setDrawColor(...primaryColor);
@@ -2793,13 +3012,13 @@ html {
             doc.line(lawnStartX, lawnStartY - 3, lawnStartX + scaledLawnWidth, lawnStartY - 3);
             doc.line(lawnStartX, lawnStartY - 4, lawnStartX, lawnStartY - 2);
             doc.line(lawnStartX + scaledLawnWidth, lawnStartY - 4, lawnStartX + scaledLawnWidth, lawnStartY - 2);
-            doc.text(`${lawnWidthMeters.toFixed(2)}`, lawnStartX + scaledLawnWidth / 2, lawnStartY - 5, { align: 'center' });
+            doc.text(formatLen(lawnWidthMeters), lawnStartX + scaledLawnWidth / 2, lawnStartY - 5, { align: 'center' });
             
             // Left dimension
             doc.line(lawnStartX - 3, lawnStartY, lawnStartX - 3, lawnStartY + scaledLawnHeight);
             doc.line(lawnStartX - 4, lawnStartY, lawnStartX - 2, lawnStartY);
             doc.line(lawnStartX - 4, lawnStartY + scaledLawnHeight, lawnStartX - 2, lawnStartY + scaledLawnHeight);
-            doc.text(`${lawnHeightMeters.toFixed(2)}`, lawnStartX - 6, lawnStartY + scaledLawnHeight / 2, { align: 'center', angle: 90 });
+            doc.text(formatLen(lawnHeightMeters), lawnStartX - 6, lawnStartY + scaledLawnHeight / 2, { align: 'center', angle: 90 });
         }
         
         // Draw sprinklers
@@ -2969,11 +3188,11 @@ html {
             doc.text(`${index + 1}`, col1, yPos);
             const typeLabel = sprinkler.type === 'circular' ? 'CIRC' : sprinkler.type === 'impact' ? 'IMPT' : 'OSCL';
             doc.text(typeLabel, col2, yPos);
-            doc.text(`[${relX.toFixed(2)}, ${relY.toFixed(2)}]`, col3, yPos);
+            doc.text(`[${fromMeters(relX).toFixed(2)}, ${fromMeters(relY).toFixed(2)}]`, col3, yPos);
             if (sprinkler.type === 'oscillating') {
-                doc.text(`${sprinkler.coverageWidth.toFixed(2)}×${sprinkler.coverageLength.toFixed(2)} m`, col4, yPos);
+                doc.text(`${fromMeters(sprinkler.coverageWidth).toFixed(2)}×${fromMeters(sprinkler.coverageLength).toFixed(2)} ${unitSuffix()}`, col4, yPos);
             } else {
-                doc.text(`${sprinkler.radius.toFixed(2)} m`, col4, yPos);
+                doc.text(formatLen(sprinkler.radius), col4, yPos);
             }
             doc.text(sprinkler.type === 'impact' ? `${sprinkler.angle}°` : '--', col5, yPos);
             doc.text((sprinkler.type === 'impact' || sprinkler.type === 'oscillating') ? `${sprinkler.rotation}°` : '--', col6, yPos);
@@ -3081,14 +3300,21 @@ html {
         doc.line(margin + 4, yPos - 2, margin + 4, yPos + 1);
         doc.text('1m GRID', margin + 9, yPos);
         
-        // Footer info (moved above notes to avoid overlap)
-        yPos += 8;
-        doc.setFontSize(7);
-        doc.setTextColor(120, 120, 120);
-        doc.setFont('courier', 'normal');
-        doc.text('Generated by Lawn Sprinkler Simulator', margin, yPos);
-        doc.text(`Sheet 1 of 1`, pageWidth - margin, yPos, { align: 'right' });
-        
+        // Branded footer — stamped on every page as a promotional/attribution credit
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let p = 1; p <= totalPages; p++) {
+            doc.setPage(p);
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.setFont('courier', 'normal');
+            doc.textWithLink('Made with MyLawnPlanner — mylawnplanner.netlify.app', pageWidth / 2, pageHeight - 8, {
+                align: 'center',
+                url: 'https://mylawnplanner.netlify.app/'
+            });
+            doc.setFontSize(7);
+            doc.text(`Sheet ${p} of ${totalPages}`, pageWidth - margin, pageHeight - 8, { align: 'right' });
+        }
+
         // Store PDF globally for download button
         window.generatedPDF = doc;
     }
